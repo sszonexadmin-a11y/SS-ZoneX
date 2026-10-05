@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>SS ZoneX - Login</title>
+    <link rel="icon" href="logo.png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { 
+            background: linear-gradient(135deg, #0B1120 0%, #0F1B2E 50%, #0B1120 100%);
+            background-size: 200% 200%;
+            animation: gradientShift 15s ease infinite;
+            font-family: 'Inter', 'Hind Siliguri', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        .refer-badge {
+            background: linear-gradient(135deg, rgba(251, 191, 36, 0.15) 0%, rgba(245, 158, 11, 0.08) 100%);
+            border: 1px solid rgba(251, 191, 36, 0.35);
+        }
+        .btn-glow {
+            background: linear-gradient(135deg, #F97316 0%, #EA580C 50%, #C2410C 100%);
+            box-shadow: 0 8px 24px rgba(249, 115, 22, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            transition: all 0.2s;
+        }
+        .btn-glow:hover { transform: translateY(-2px); box-shadow: 0 12px 32px rgba(249, 115, 22, 0.55); }
+        .btn-glow:active { transform: translateY(0) scale(0.98); }
+        .glass {
+            background: rgba(17, 24, 39, 0.7);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+        .logo-glow { filter: drop-shadow(0 0 30px rgba(249, 115, 22, 0.4)); }
+        .spinner {
+            display: inline-block;
+            width: 16px; height: 16px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-4">
+
+    <div class="w-full max-w-md">
+        <div class="glass border border-slate-800 rounded-3xl p-6 shadow-2xl">
+
+            <!-- Logo -->
+            <div class="text-center mb-6">
+                <img src="logo.png" alt="SS ZoneX" class="w-32 h-32 mx-auto object-contain logo-glow" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                <h1 style="display:none" class="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-yellow-400 mb-2">SS ZoneX</h1>
+                <p id="welcomeText" class="text-xs text-slate-400 mt-2">Welcome to Login</p>
+            </div>
+
+            <!-- Tabs -->
+            <div class="grid grid-cols-2 gap-1 bg-slate-900/80 p-1 rounded-2xl mb-5">
+                <button id="loginTab" onclick="switchTab('login')"
+                    class="py-3 text-sm font-bold rounded-xl bg-orange-500 text-white shadow-lg shadow-orange-500/30 transition-all">
+                    Login
+                </button>
+                <button id="signupTab" onclick="switchTab('signup')"
+                    class="py-3 text-sm font-bold rounded-xl text-slate-400 transition-all">
+                    Sign Up
+                </button>
+            </div>
+
+            <!-- Refer Notice -->
+            <div id="referNotice" class="hidden refer-badge rounded-xl p-3 mb-4 flex items-center gap-2">
+                <i class="fa-solid fa-gift text-yellow-400"></i>
+                <div class="flex-1">
+                    <p class="text-[11px] text-yellow-300 font-bold">🎁 Refer Bonus Applied!</p>
+                    <p class="text-[10px] text-yellow-400/80">আপনার referrer পাবেন ৳10 bonus</p>
+                </div>
+                <button onclick="clearReferCode()" class="text-yellow-400/70 hover:text-yellow-400 text-xs">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <!-- Form -->
+            <form id="authForm" onsubmit="handleAuth(event)" class="space-y-4">
+
+                <div id="nameField" class="hidden">
+                    <label class="block text-xs text-slate-300 mb-1.5 font-medium">Full Name</label>
+                    <input type="text" id="nameInput" placeholder="e.g. Shovo Ahmed"
+                        class="w-full bg-slate-900 border border-slate-700 rounded-xl p-3.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-orange-500 transition-colors">
+                </div>
+
+                <div>
+                    <label class="block text-xs text-slate-300 mb-1.5 font-medium">Email</label>
+                    <input type="email" id="emailInput" required placeholder="you@example.com"
+                        class="w-full bg-slate-900 border border-slate-700 rounded-xl p-3.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-orange-500 transition-colors">
+                </div>
+
+                <div>
+                    <label class="block text-xs text-slate-300 mb-1.5 font-medium">Password</label>
+                    <div class="relative">
+                        <input type="password" id="passwordInput" required minlength="6" placeholder="Minimum 6 characters"
+                            class="w-full bg-slate-900 border border-slate-700 rounded-xl p-3.5 pr-16 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-orange-500 transition-colors">
+                        <button type="button" onclick="togglePassword()"
+                            class="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-slate-400 bg-slate-800 px-3 py-1.5 rounded-lg font-medium">
+                            Show
+                        </button>
+                    </div>
+                </div>
+
+                <div id="referField" class="hidden">
+                    <label class="block text-xs text-slate-300 mb-1.5 font-medium">
+                        Refer Code <span class="text-slate-500 font-normal">(optional)</span>
+                    </label>
+                    <div class="relative">
+                        <i class="fa-solid fa-user-group absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500 text-sm"></i>
+                        <input type="text" id="referInput" placeholder="e.g. SS123ABC"
+                            class="w-full bg-slate-900 border border-slate-700 rounded-xl pl-10 pr-3 py-3.5 text-sm text-white uppercase placeholder-slate-500 focus:outline-none focus:border-yellow-500 transition-colors tracking-wider">
+                    </div>
+                    <p id="referStatus" class="text-[10px] mt-1.5 hidden"></p>
+                </div>
+
+                <p id="errorMsg" class="text-xs text-rose-400 hidden"></p>
+
+                <button type="submit" id="submitBtn" class="btn-glow w-full text-white font-bold py-4 rounded-xl text-sm disabled:opacity-60">
+                    <span id="btnText">Login</span>
+                    <span id="btnLoader" class="hidden"><span class="spinner"></span> Please wait...</span>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script type="module">
+        import { supabase } from './supabase-config.js';
+
+        let currentTab = 'login';
+        let pendingReferCode = null;
+        let verifiedReferrer = null;
+
+        // Auto redirect if logged in
+        supabase.auth.getSession().then(({ data: { session } }) => {
+            if (session) window.location.href = 'home.html';
+        });
+
+        // URL refer code detection
+        (function detectReferFromUrl() {
+            const params = new URLSearchParams(window.location.search);
+            const ref = params.get('ref');
+            if (ref) {
+                pendingReferCode = ref.toUpperCase().trim();
+                setTimeout(() => {
+                    switchTab('signup');
+                    document.getElementById('referInput').value = pendingReferCode;
+                    verifyReferCode(pendingReferCode);
+                }, 100);
+            }
+        })();
+
+        window.switchTab = function(tab) {
+            currentTab = tab;
+            const loginTab = document.getElementById('loginTab');
+            const signupTab = document.getElementById('signupTab');
+            const nameField = document.getElementById('nameField');
+            const referField = document.getElementById('referField');
+            const referNotice = document.getElementById('referNotice');
+            const btnText = document.getElementById('btnText');
+            const welcomeText = document.getElementById('welcomeText');
+
+            if (tab === 'login') {
+                loginTab.className = 'py-3 text-sm font-bold rounded-xl bg-orange-500 text-white shadow-lg shadow-orange-500/30 transition-all';
+                signupTab.className = 'py-3 text-sm font-bold rounded-xl text-slate-400 transition-all';
+                nameField.classList.add('hidden');
+                referField.classList.add('hidden');
+                referNotice.classList.add('hidden');
+                btnText.innerText = 'Login';
+                welcomeText.innerText = 'Welcome to Login';
+            } else {
+                signupTab.className = 'py-3 text-sm font-bold rounded-xl bg-orange-500 text-white shadow-lg shadow-orange-500/30 transition-all';
+                loginTab.className = 'py-3 text-sm font-bold rounded-xl text-slate-400 transition-all';
+                nameField.classList.remove('hidden');
+                referField.classList.remove('hidden');
+                btnText.innerText = 'Create Account';
+                welcomeText.innerText = 'Welcome to Signup';
+                if (pendingReferCode) referNotice.classList.remove('hidden');
+            }
+            document.getElementById('errorMsg').classList.add('hidden');
+        };
+
+        window.togglePassword = function() {
+            const input = document.getElementById('passwordInput');
+            input.type = input.type === 'password' ? 'text' : 'password';
+        };
+
+        async function verifyReferCode(code) {
+            const statusEl = document.getElementById('referStatus');
+            if (!code) {
+                statusEl.classList.add('hidden');
+                verifiedReferrer = null;
+                return;
+            }
+            statusEl.classList.remove('hidden');
+            statusEl.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Checking...';
+            statusEl.className = 'text-[10px] mt-1.5 text-slate-400';
+
+            try {
+                const { data, error } = await supabase
+                    .from('profiles')
+                    .select('id, name, email, refer_code')
+                    .eq('refer_code', code)
+                    .maybeSingle();
+
+                if (error || !data) {
+                    statusEl.innerHTML = '<i class="fa-solid fa-xmark"></i> এই code টি সঠিক নয়!';
+                    statusEl.className = 'text-[10px] mt-1.5 text-rose-400';
+                    verifiedReferrer = null;
+                    return;
+                }
+
+                if (data.email === document.getElementById('emailInput').value.trim().toLowerCase()) {
+                    statusEl.innerHTML = '<i class="fa-solid fa-xmark"></i> নিজের code ব্যবহার করা যাবে না!';
+                    statusEl.className = 'text-[10px] mt-1.5 text-rose-400';
+                    verifiedReferrer = null;
+                    return;
+                }
+
+                verifiedReferrer = { id: data.id, name: data.name, code: data.refer_code };
+                statusEl.innerHTML = `<i class="fa-solid fa-check-circle"></i> Valid! Referrer: <b>${data.name}</b>`;
+                statusEl.className = 'text-[10px] mt-1.5 text-emerald-400';
+            } catch (err) {
+                console.error(err);
+                statusEl.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i> Verify failed';
+                statusEl.className = 'text-[10px] mt-1.5 text-amber-400';
+                verifiedReferrer = null;
+            }
+        }
+
+        document.getElementById('referInput').addEventListener('blur', (e) => {
+            const code = e.target.value.toUpperCase().trim();
+            if (code) { pendingReferCode = code; verifyReferCode(code); }
+        });
+
+        let referTypingTimer;
+        document.getElementById('referInput').addEventListener('input', (e) => {
+            clearTimeout(referTypingTimer);
+            const code = e.target.value.toUpperCase().trim();
+            referTypingTimer = setTimeout(() => {
+                if (code.length >= 4) { pendingReferCode = code; verifyReferCode(code); }
+                else { verifiedReferrer = null; document.getElementById('referStatus').classList.add('hidden'); }
+            }, 600);
+        });
+
+        window.clearReferCode = function() {
+            pendingReferCode = null;
+            verifiedReferrer = null;
+            document.getElementById('referInput').value = '';
+            document.getElementById('referNotice').classList.add('hidden');
+            document.getElementById('referStatus').classList.add('hidden');
+            window.history.replaceState({}, '', window.location.pathname);
+        };
+
+        window.handleAuth = async function(e) {
+            e.preventDefault();
+            const email = document.getElementById('emailInput').value.trim().toLowerCase();
+            const password = document.getElementById('passwordInput').value;
+            const name = document.getElementById('nameInput').value.trim();
+            const referCodeInput = document.getElementById('referInput').value.toUpperCase().trim();
+            const errorMsg = document.getElementById('errorMsg');
+            const submitBtn = document.getElementById('submitBtn');
+            const btnText = document.getElementById('btnText');
+            const btnLoader = document.getElementById('btnLoader');
+
+            errorMsg.classList.add('hidden');
+            submitBtn.disabled = true;
+            btnText.classList.add('hidden');
+            btnLoader.classList.remove('hidden');
+
+            try {
+                if (currentTab === 'signup') {
+                    if (!name) throw new Error('Please enter your name');
+
+                    if (referCodeInput && !verifiedReferrer) {
+                        await verifyReferCode(referCodeInput);
+                        if (!verifiedReferrer && referCodeInput) throw new Error('Refer code টি সঠিক নয়!');
+                    }
+
+                    // Sign up with metadata
+                    const { data: signupData, error: signupError } = await supabase.auth.signUp({
+                        email,
+                        password,
+                        options: {
+                            data: {
+                                name: name,
+                                refer_code: verifiedReferrer ? verifiedReferrer.code : null
+                            }
+                        }
+                    });
+
+                    if (signupError) throw signupError;
+                    if (!signupData.user) throw new Error('Signup failed');
+
+                    // If referrer exists, give them bonus
+                    if (verifiedReferrer && signupData.user) {
+                        try {
+                            // Update referrer balance
+                            const { data: refProfile } = await supabase
+                                .from('profiles')
+                                .select('balance, refer_count, earned')
+                                .eq('id', verifiedReferrer.id)
+                                .single();
+
+                            if (refProfile) {
+                                await supabase.from('profiles').update({
+                                    balance: (refProfile.balance || 0) + 10,
+                                    refer_count: (refProfile.refer_count || 0) + 1,
+                                    earned: (refProfile.earned || 0) + 10
+                                }).eq('id', verifiedReferrer.id);
+
+                                // Log refer bonus
+                                await supabase.from('refer_bonuses').insert({
+                                    referrer_id: verifiedReferrer.id,
+                                    referrer_name: verifiedReferrer.name,
+                                    referred_id: signupData.user.id,
+                                    referred_name: name,
+                                    amount: 10
+                                });
+                            }
+                        } catch (refErr) {
+                            console.error('Refer bonus failed:', refErr);
+                        }
+                    }
+
+                    // Try to sign in automatically
+                    const { error: signinError } = await supabase.auth.signInWithPassword({ email, password });
+                    if (signinError) throw new Error('Account তৈরি হয়েছে কিন্তু login করা যায়নি। Login ট্যাবে যান।');
+                    
+                    window.location.href = 'home.html';
+                } else {
+                    const { error } = await supabase.auth.signInWithPassword({ email, password });
+                    if (error) throw error;
+                    window.location.href = 'home.html';
+                }
+            } catch (err) {
+                let msg = err.message || 'Something went wrong';
+                if (msg.includes('already registered') || msg.includes('already been registered')) msg = 'এই Email দিয়ে আগেই account আছে!';
+                else if (msg.includes('Invalid login') || msg.includes('invalid_credentials')) msg = 'Email বা Password ভুল!';
+                else if (msg.includes('Email not confirmed')) msg = 'Email verify করুন!';
+                else if (msg.includes('Password should be')) msg = 'Password দুর্বল!';
+                else if (msg.includes('rate')) msg = 'একটু অপেক্ষা করুন, আবার চেষ্টা করুন';
+
+                errorMsg.innerText = '⚠️ ' + msg;
+                errorMsg.classList.remove('hidden');
+            } finally {
+                submitBtn.disabled = false;
+                btnText.classList.remove('hidden');
+                btnLoader.classList.add('hidden');
+            }
+        };
+    </script>
+</body>
+</html>
