@@ -1,0 +1,1232 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>SS ZoneX - Tournament</title>
+<link rel="icon" href="logo.png">
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+*{-webkit-tap-highlight-color:transparent;box-sizing:border-box}
+body{background:#0B1120;color:#fff;font-family:'Inter','Hind Siliguri',sans-serif;overscroll-behavior:none;margin:0}
+::-webkit-scrollbar{width:0}
+.bg-animated{background:linear-gradient(135deg,#0B1120 0%,#0F1B2E 50%,#0B1120 100%);background-size:200% 200%;animation:gradientShift 15s ease infinite}
+@keyframes gradientShift{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+.glass{background:rgba(17,24,39,.7);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.08)}
+.btn-glow{background:linear-gradient(135deg,#F97316 0%,#EA580C 50%,#C2410C 100%);box-shadow:0 8px 24px rgba(249,115,22,.4),inset 0 1px 0 rgba(255,255,255,.2);transition:all .2s}
+.btn-glow:active{transform:scale(.98)}
+.btn-emerald{background:linear-gradient(135deg,#10B981 0%,#059669 50%,#047857 100%);box-shadow:0 8px 24px rgba(16,185,129,.4);transition:all .2s}
+.btn-emerald:active{transform:scale(.98)}
+.btn-rose{background:linear-gradient(135deg,#F43F5E 0%,#E11D48 50%,#BE123C 100%);box-shadow:0 8px 24px rgba(244,63,94,.4);transition:all .2s}
+.btn-rose:active{transform:scale(.98)}
+.gradient-text{background:linear-gradient(90deg,#F97316,#FBBF24);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.bottom-sheet{transform:translateY(100%);transition:transform .3s cubic-bezier(.4,0,.2,1);max-height:90vh}
+.bottom-sheet.open{transform:translateY(0)}
+.toast{transform:translate(-50%,-150%);transition:transform .4s cubic-bezier(.34,1.56,.64,1),opacity .4s;opacity:0;pointer-events:none}
+.toast.show{transform:translate(-50%,0);opacity:1;pointer-events:auto}
+.shimmer{background:linear-gradient(90deg,#1e293b 25%,#334155 50%,#1e293b 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;border-radius:12px}
+@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+.app-page{animation:fadeIn .3s ease-in-out}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.pulse-dot{animation:pulse 2s cubic-bezier(.4,0,.6,1) infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.bounce-in{animation:bounceIn .5s cubic-bezier(.68,-.55,.265,1.55)}
+@keyframes bounceIn{0%{transform:scale(.8);opacity:0}100%{transform:scale(1);opacity:1}}
+.ripple{position:relative;overflow:hidden}
+.ripple:active::after{content:"";position:absolute;inset:0;background:radial-gradient(circle,rgba(255,255,255,.3) 10%,transparent 10.01%);transform:scale(10);opacity:.4}
+@keyframes confetti-fall{0%{transform:translateY(-100vh) rotate(0);opacity:1}100%{transform:translateY(100vh) rotate(720deg);opacity:0}}
+.confetti-piece{position:fixed;width:10px;height:10px;pointer-events:none;z-index:1000;animation:confetti-fall 3s linear forwards}
+.loading-screen{position:fixed;inset:0;background:#0B1120;display:flex;align-items:center;justify-content:center;z-index:999;transition:opacity .4s}
+.loading-screen.hide{opacity:0;pointer-events:none}
+.spinner{display:inline-block;width:16px;height:16px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.countdown-pulse{animation:cdpulse 1.5s ease-in-out infinite}
+@keyframes cdpulse{0%,100%{transform:scale(1)}50%{transform:scale(1.02)}}
+.match-card{transition:all .3s cubic-bezier(.4,0,.2,1)}
+.match-card:active{transform:scale(.98)}
+.bottom-nav-btn.active{color:#F97316}
+.bottom-nav-btn.active i{transform:scale(1.15)}
+.left-bar-br{border-left:4px solid #F59E0B}
+.left-bar-cs{border-left:4px solid #3B82F6}
+</style>
+</head>
+<body class="bg-animated">
+
+<!-- LOADING -->
+<div id="loadingScreen" class="loading-screen">
+<div class="text-center">
+<img src="logo.png" class="w-24 h-24 mx-auto object-contain mb-3 animate-pulse" onerror="this.style.display='none'">
+<h1 class="text-2xl font-black gradient-text">SS ZoneX</h1>
+<p class="text-xs text-slate-400 mt-2">Loading...</p>
+</div>
+</div>
+
+<!-- BAN OVERLAY -->
+<div id="banOverlay" class="fixed inset-0 z-[200] hidden flex-col items-center justify-center p-6 text-center" style="background:linear-gradient(135deg,#0B1120 0%,#1a0505 50%,#0B1120 100%)">
+<div class="w-full max-w-sm">
+<div class="w-20 h-20 mx-auto rounded-full bg-gradient-to-br from-rose-600 to-red-800 flex items-center justify-center mb-4 animate-pulse">
+<i class="fa-solid fa-ban text-white text-4xl"></i>
+</div>
+<h1 class="text-2xl font-black text-rose-500 mb-2">🚫 Account Banned</h1>
+<div class="bg-slate-900/80 border border-rose-500/40 rounded-2xl p-4 text-left my-4">
+<p class="text-[10px] text-slate-500 uppercase mb-1">Reason</p>
+<p id="banReason" class="text-sm text-rose-400 font-bold mb-3">Rules violation</p>
+<p class="text-[10px] text-slate-500 uppercase mb-1">Type</p>
+<p id="banType" class="text-sm text-white font-bold">Permanent</p>
+</div>
+<button onclick="logout()" class="w-full bg-slate-800 text-slate-300 font-medium py-3 rounded-xl text-xs">Logout</button>
+</div>
+</div>
+
+<!-- MAIN CONTAINER -->
+<div class="w-full max-w-md mx-auto min-h-screen flex flex-col relative bg-animated">
+
+<!-- HEADER -->
+<header class="glass p-3 flex items-center justify-between border-b border-slate-800/80 sticky top-0 z-30">
+<div class="flex items-center gap-2 flex-1 min-w-0">
+<div class="w-9 h-9 rounded-full bg-slate-900 border border-slate-700 flex items-center justify-center overflow-hidden flex-shrink-0">
+<img src="logo.png" class="w-full h-full object-contain p-0.5" onerror="this.parentNode.innerHTML='<i class=\'fa-solid fa-gamepad text-orange-500\'></i>'">
+</div>
+<div class="min-w-0 flex-1">
+<h1 onclick="openProfileModal()" class="font-bold text-sm cursor-pointer truncate" id="userName">Loading...</h1>
+<p class="text-[11px] text-slate-400 flex items-center gap-1.5 mt-0.5">
+<button onclick="nav('wallet')" class="text-emerald-400 font-semibold flex items-center gap-1">
+<i class="fa-solid fa-wallet text-[10px]"></i> ৳<span id="userBalance">0.00</span>
+</button>
+<span class="text-slate-600">•</span>
+<button onclick="openBonus()" class="text-yellow-400 flex items-center gap-1 font-medium relative">
+<i class="fa-solid fa-gift text-[10px]"></i> Bonus
+<span id="bonusDot" class="absolute -top-1 -right-2 w-2 h-2 bg-rose-500 rounded-full pulse-dot"></span>
+</button>
+</p>
+</div>
+</div>
+<div class="flex items-center gap-1.5">
+<button onclick="openNotif()" class="ripple w-8 h-8 rounded-full bg-slate-800 text-slate-300 flex items-center justify-center text-xs border border-slate-700 relative">
+<i class="fa-solid fa-bell"></i>
+<span id="notifDot" class="hidden absolute -top-0.5 -right-0.5 w-2 h-2 bg-rose-500 rounded-full pulse-dot"></span>
+</button>
+<button onclick="openRules()" class="ripple w-8 h-8 rounded-full bg-slate-800 text-slate-300 flex items-center justify-center text-xs border border-slate-700">
+<i class="fa-solid fa-book-open"></i>
+</button>
+<button onclick="logout()" class="ripple w-8 h-8 rounded-full bg-slate-800 text-slate-300 flex items-center justify-center text-xs border border-slate-700">
+<i class="fa-solid fa-right-from-bracket"></i>
+</button>
+</div>
+</header>
+
+<!-- SCROLL AREA -->
+<main id="mainScroll" class="flex-1 overflow-y-auto pb-24">
+
+<!-- NOTICE BAR -->
+<div class="px-3 pt-3">
+<div class="bg-gradient-to-r from-amber-600/20 via-yellow-500/20 to-amber-600/20 border border-yellow-500/30 rounded-xl px-3 py-2 text-xs text-yellow-300 flex items-center gap-2">
+<i class="fa-solid fa-bullhorn text-yellow-400 animate-pulse flex-shrink-0"></i>
+<marquee id="noticeText" class="font-medium text-[11px]" scrollamount="5">Loading...</marquee>
+</div>
+</div>
+
+<!-- HOME PAGE -->
+<div id="page-home" class="app-page p-3 space-y-3">
+<h3 class="text-[10px] font-bold uppercase tracking-wider text-slate-400 px-1">Select Game Category</h3>
+<div class="grid grid-cols-2 gap-3">
+<div onclick="nav('br')" class="ripple shine-effect relative overflow-hidden rounded-2xl border border-amber-500/40 p-4 cursor-pointer active:scale-95 min-h-[130px] flex flex-col justify-between" style="background:linear-gradient(180deg,rgba(15,23,42,.4) 0%,rgba(15,23,42,.95) 100%),url('https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=600');background-size:cover;background-position:center">
+<div class="flex justify-between items-start">
+<div class="w-9 h-9 rounded-xl bg-amber-500/20 backdrop-blur border border-amber-500/40 text-amber-400 flex items-center justify-center text-lg">
+<i class="fa-solid fa-trophy"></i>
+</div>
+<span class="bg-amber-500 text-slate-950 text-[9px] font-black px-1.5 py-0.5 rounded-full uppercase">LIVE</span>
+</div>
+<div>
+<h4 class="font-extrabold text-sm text-white">BR-Match</h4>
+<p class="text-[10px] text-slate-300">Battle Royale</p>
+<div class="mt-2 flex items-center justify-between text-[10px] text-amber-300 font-medium pt-1.5 border-t border-amber-500/30">
+<span><i class="fa-solid fa-gamepad mr-1"></i><span id="brCount">0</span> Matches</span>
+<i class="fa-solid fa-chevron-right"></i>
+</div>
+</div>
+</div>
+<div onclick="nav('cs')" class="ripple shine-effect relative overflow-hidden rounded-2xl border border-blue-500/40 p-4 cursor-pointer active:scale-95 min-h-[130px] flex flex-col justify-between" style="background:linear-gradient(180deg,rgba(15,23,42,.4) 0%,rgba(15,23,42,.95) 100%),url('https://images.unsplash.com/photo-1511512578047-dfb367046420?q=80&w=600');background-size:cover;background-position:center">
+<div class="flex justify-between items-start">
+<div class="w-9 h-9 rounded-xl bg-blue-500/20 backdrop-blur border border-blue-500/40 text-blue-400 flex items-center justify-center text-lg">
+<i class="fa-solid fa-fire-flame-curved"></i>
+</div>
+<span class="bg-blue-500 text-white text-[9px] font-black px-1.5 py-0.5 rounded-full uppercase">HOT</span>
+</div>
+<div>
+<h4 class="font-extrabold text-sm text-white">CS-Match</h4>
+<p class="text-[10px] text-slate-300">Clash Squad 4v4</p>
+<div class="mt-2 flex items-center justify-between text-[10px] text-blue-300 font-medium pt-1.5 border-t border-blue-500/30">
+<span><i class="fa-solid fa-gamepad mr-1"></i><span id="csCount">0</span> Matches</span>
+<i class="fa-solid fa-chevron-right"></i>
+</div>
+</div>
+</div>
+</div>
+<div class="grid grid-cols-3 gap-2 pt-1">
+<div class="glass rounded-xl p-3 text-center">
+<i class="fa-solid fa-trophy text-amber-400 text-sm mb-1"></i>
+<p class="text-[9px] text-slate-400 uppercase">Wins</p>
+<p id="quickWins" class="text-sm font-black">0</p>
+</div>
+<div class="glass rounded-xl p-3 text-center">
+<i class="fa-solid fa-gamepad text-emerald-400 text-sm mb-1"></i>
+<p class="text-[9px] text-slate-400 uppercase">Played</p>
+<p id="quickPlayed" class="text-sm font-black">0</p>
+</div>
+<div class="glass rounded-xl p-3 text-center">
+<i class="fa-solid fa-coins text-yellow-400 text-sm mb-1"></i>
+<p class="text-[9px] text-slate-400 uppercase">Earned</p>
+<p id="quickEarned" class="text-sm font-black">৳0</p>
+</div>
+</div>
+</div>
+
+<!-- BR PAGE -->
+<div id="page-br" class="app-page hidden p-3 space-y-3">
+<button onclick="nav('home')" class="text-xs font-bold text-amber-400 flex items-center gap-1.5 bg-slate-900 px-3 py-1.5 rounded-lg border border-slate-700 active:scale-95">
+<i class="fa-solid fa-arrow-left"></i> Home
+</button>
+<h3 class="font-extrabold text-sm text-amber-400"><i class="fa-solid fa-trophy mr-1"></i> BR Matches</h3>
+<div id="brList" class="space-y-3">
+<div class="shimmer h-32"></div><div class="shimmer h-32"></div>
+</div>
+</div>
+
+<!-- CS PAGE -->
+<div id="page-cs" class="app-page hidden p-3 space-y-3">
+<button onclick="nav('home')" class="text-xs font-bold text-blue-400 flex items-center gap-1.5 bg-slate-900 px-3 py-1.5 rounded-lg border border-slate-700 active:scale-95">
+<i class="fa-solid fa-arrow-left"></i> Home
+</button>
+<h3 class="font-extrabold text-sm text-blue-400"><i class="fa-solid fa-fire-flame-curved mr-1"></i> CS Matches</h3>
+<div id="csList" class="space-y-3">
+<div class="shimmer h-32"></div><div class="shimmer h-32"></div>
+</div>
+</div>
+
+<!-- MATCH DETAILS -->
+<div id="page-details" class="app-page hidden p-3 space-y-3">
+<button onclick="nav(prevPage||'home')" class="text-xs font-bold text-emerald-400 flex items-center gap-1.5 bg-slate-900 px-3 py-1.5 rounded-lg border border-slate-700 active:scale-95">
+<i class="fa-solid fa-chevron-left"></i> Back
+</button>
+<div class="glass rounded-2xl p-4">
+<div class="flex justify-between items-start mb-2">
+<div class="flex-1">
+<h2 id="dTitle" class="text-base font-black">Match Title</h2>
+<p id="dSub" class="text-xs text-slate-400 mt-1"><i class="fa-solid fa-map-location-dot text-emerald-400 mr-1"></i> Bermuda • Squad</p>
+</div>
+<span id="dTime" class="text-[10px] bg-rose-500/20 text-rose-400 font-bold px-2 py-0.5 rounded-full border border-rose-500/30">Time</span>
+</div>
+<div class="mt-2 p-2.5 bg-slate-950/70 border border-emerald-500/30 rounded-xl flex items-center justify-between">
+<div class="flex items-center gap-2">
+<i class="fa-solid fa-clock text-emerald-400 text-xs countdown-pulse"></i>
+<span class="text-[9px] uppercase text-slate-400 font-bold">Starts In</span>
+</div>
+<span id="dCountdown" class="font-black text-emerald-400 text-xs tracking-wider">--:--:--</span>
+</div>
+<div class="mt-3 pt-2.5 border-t border-slate-800">
+<div class="flex justify-between text-[10px] text-slate-400 mb-1.5">
+<span>Spots Filled</span>
+<span id="dSlots" class="font-bold text-emerald-400">0/50</span>
+</div>
+<div class="w-full h-2 bg-slate-950 rounded-full overflow-hidden">
+<div id="dProgress" class="h-full bg-gradient-to-r from-emerald-500 to-teal-400 rounded-full transition-all" style="width:0%"></div>
+</div>
+</div>
+</div>
+<div class="grid grid-cols-3 gap-2 text-center">
+<div class="glass rounded-xl p-2.5">
+<p class="text-[9px] text-slate-400 uppercase">Prize</p>
+<p id="dPrize" class="text-sm font-black text-yellow-400 mt-0.5">৳0</p>
+</div>
+<div class="glass rounded-xl p-2.5">
+<p class="text-[9px] text-slate-400 uppercase">Per Kill</p>
+<p id="dKill" class="text-sm font-black text-rose-400 mt-0.5">৳0</p>
+</div>
+<div class="glass rounded-xl p-2.5">
+<p class="text-[9px] text-slate-400 uppercase">Entry</p>
+<p id="dFee" class="text-sm font-black text-emerald-400 mt-0.5">৳0</p>
+</div>
+</div>
+<div class="glass rounded-2xl p-3 space-y-2">
+<h4 class="font-bold text-[10px] text-amber-400 uppercase"><i class="fa-solid fa-circle-info"></i> Rules</h4>
+<ul class="text-[11px] text-slate-300 space-y-1 list-disc list-inside">
+<li>গেম শুরু হওয়ার ১০ মিনিট আগে Room ID দেওয়া হবে</li>
+<li>Hack বা Emulator নিষেধ</li>
+<li>সঠিক Free Fire IGN দিন</li>
+</ul>
+</div>
+<div class="glass rounded-2xl p-3 space-y-2 border border-emerald-500/40">
+<h4 class="font-bold text-xs text-white"><i class="fa-solid fa-user-check text-emerald-400"></i> Player In-Game Name</h4>
+<input type="text" id="dIgn" placeholder="Game Name" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-emerald-500">
+<button onclick="joinMatch()" id="dJoinBtn" class="btn-emerald w-full text-white font-extrabold py-3 rounded-xl text-sm disabled:opacity-60">
+<i class="fa-solid fa-bolt mr-1"></i> Confirm & Join
+</button>
+</div>
+</div>
+
+<!-- HISTORY -->
+<div id="page-history" class="app-page hidden p-3 space-y-3">
+<h3 class="font-bold text-emerald-400 text-sm"><i class="fa-solid fa-gamepad mr-1"></i> Match History</h3>
+<div id="historyList" class="space-y-3">
+<div class="shimmer h-32"></div>
+</div>
+</div>
+
+<!-- LEADERBOARD -->
+<div id="page-leaderboard" class="app-page hidden p-3 space-y-3">
+<div class="bg-gradient-to-br from-yellow-500/20 to-amber-600/10 border border-yellow-500/40 rounded-2xl p-4">
+<div class="flex items-center gap-3">
+<div class="w-12 h-12 bg-yellow-500/30 rounded-2xl flex items-center justify-center text-yellow-400 text-2xl">
+<i class="fa-solid fa-crown"></i>
+</div>
+<div>
+<h3 class="font-black text-white text-base">Leaderboard</h3>
+<p class="text-[10px] text-yellow-300/80">Top Champions of SS ZoneX</p>
+</div>
+</div>
+</div>
+<div class="glass rounded-xl p-1.5 grid grid-cols-3 gap-1">
+<button onclick="loadLB('balance')" id="lbt-balance" class="py-2 text-[11px] font-bold bg-slate-800 text-white rounded-lg">💰 Balance</button>
+<button onclick="loadLB('wins')" id="lbt-wins" class="py-2 text-[11px] text-slate-400 rounded-lg">🏆 Wins</button>
+<button onclick="loadLB('played')" id="lbt-played" class="py-2 text-[11px] text-slate-400 rounded-lg">🎮 Played</button>
+</div>
+<div id="lbList" class="space-y-2">
+<div class="shimmer h-14"></div><div class="shimmer h-14"></div>
+</div>
+</div>
+
+<!-- WALLET -->
+<div id="page-wallet" class="app-page hidden p-3 space-y-3">
+<div class="bg-gradient-to-br from-emerald-600/20 to-emerald-900/20 border border-emerald-500/40 rounded-xl p-4 flex justify-between items-center">
+<div>
+<p class="text-[10px] text-slate-400">Total Balance</p>
+<h2 class="text-2xl font-black text-emerald-400">৳<span id="walletBalance">0.00</span></h2>
+</div>
+<div class="flex flex-col gap-1.5">
+<button onclick="openDeposit()" class="btn-rose text-white text-[10px] px-3 py-1.5 rounded-lg font-bold">Deposit</button>
+<button onclick="openWithdraw()" class="btn-emerald text-white text-[10px] px-3 py-1.5 rounded-lg font-bold">Withdraw</button>
+</div>
+</div>
+<div class="flex justify-between items-center px-1">
+<h3 class="font-bold text-slate-300 text-xs"><i class="fa-solid fa-receipt text-yellow-500 mr-1"></i> Transactions</h3>
+<button onclick="loadTx()" class="text-[10px] text-blue-400"><i class="fa-solid fa-rotate mr-1"></i>Refresh</button>
+</div>
+<div id="txList" class="space-y-2">
+<div class="shimmer h-12"></div>
+</div>
+</div>
+
+<!-- REFER -->
+<div id="page-refer" class="app-page hidden p-3 space-y-3">
+<div class="glass rounded-xl p-4 text-center border border-slate-700">
+<div class="w-14 h-14 bg-emerald-500/20 text-emerald-400 rounded-full flex items-center justify-center text-2xl mx-auto mb-2">
+<i class="fa-solid fa-users-viewfinder"></i>
+</div>
+<h3 class="font-bold text-base text-white">Invite & Earn ৳10</h3>
+<p class="text-[11px] text-slate-400 mt-1">বন্ধু account খুললেই পাবেন বোনাস!</p>
+<div class="mt-3 bg-slate-950 border border-slate-700/80 rounded-xl p-3 flex items-center justify-between">
+<div class="text-left">
+<p class="text-[9px] text-slate-500">YOUR CODE</p>
+<p id="refCode" class="font-mono font-bold text-yellow-400 text-base">------</p>
+</div>
+<button onclick="copyRef()" class="btn-emerald text-white px-3 py-1.5 rounded-lg text-[10px] font-bold">Copy</button>
+</div>
+<button onclick="shareRef()" class="mt-2 w-full bg-[#25D366] text-white font-bold py-2.5 rounded-xl text-xs flex items-center justify-center gap-2">
+<i class="fa-brands fa-whatsapp text-base"></i> Share on WhatsApp
+</button>
+</div>
+<div class="grid grid-cols-2 gap-2">
+<div class="glass rounded-xl p-3 text-center border border-purple-500/40">
+<i class="fa-solid fa-user-group text-purple-400 text-base mb-1"></i>
+<p class="text-[9px] text-slate-400 uppercase">Invited</p>
+<p id="refCount" class="text-lg font-black text-purple-400">0</p>
+</div>
+<div class="glass rounded-xl p-3 text-center border border-emerald-500/40">
+<i class="fa-solid fa-sack-dollar text-emerald-400 text-base mb-1"></i>
+<p class="text-[9px] text-slate-400 uppercase">Earned</p>
+<p id="refEarned" class="text-lg font-black text-emerald-400">৳0</p>
+</div>
+</div>
+<div class="glass rounded-xl p-3">
+<h4 class="font-bold text-xs text-slate-300 mb-2"><i class="fa-solid fa-list-check text-purple-400 mr-1"></i> Your Referrals</h4>
+<div id="refList" class="space-y-2">
+<p class="text-[10px] text-slate-500 text-center py-2">Loading...</p>
+</div>
+</div>
+</div>
+
+</main>
+
+<!-- BOTTOM NAV -->
+<nav class="fixed bottom-0 left-0 right-0 max-w-md mx-auto glass border-t border-slate-800/80 grid grid-cols-5 z-30">
+<button onclick="nav('home')" id="bn-home" class="bottom-nav-btn ripple py-2.5 flex flex-col items-center gap-0.5 text-slate-400 active">
+<i class="fa-solid fa-house text-base transition-transform"></i>
+<span class="text-[9px] font-bold">Matches</span>
+</button>
+<button onclick="nav('history')" id="bn-history" class="bottom-nav-btn ripple py-2.5 flex flex-col items-center gap-0.5 text-slate-400">
+<i class="fa-solid fa-clock-rotate-left text-base transition-transform"></i>
+<span class="text-[9px] font-bold">History</span>
+</button>
+<button onclick="nav('leaderboard')" id="bn-leaderboard" class="bottom-nav-btn ripple py-2.5 flex flex-col items-center gap-0.5 text-slate-400">
+<i class="fa-solid fa-crown text-base transition-transform"></i>
+<span class="text-[9px] font-bold">Rank</span>
+</button>
+<button onclick="nav('wallet')" id="bn-wallet" class="bottom-nav-btn ripple py-2.5 flex flex-col items-center gap-0.5 text-slate-400">
+<i class="fa-solid fa-wallet text-base transition-transform"></i>
+<span class="text-[9px] font-bold">Wallet</span>
+</button>
+<button onclick="nav('refer')" id="bn-refer" class="bottom-nav-btn ripple py-2.5 flex flex-col items-center gap-0.5 text-slate-400">
+<i class="fa-solid fa-users text-base transition-transform"></i>
+<span class="text-[9px] font-bold">Refer</span>
+</button>
+</nav>
+
+</div>
+
+<!-- ═══════════════ MODALS ═══════════════ -->
+
+<!-- OVERLAY -->
+<div id="overlay" onclick="closeAll()" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-40 hidden opacity-0 transition-opacity"></div>
+
+<!-- DEPOSIT -->
+<div id="mDeposit" class="bottom-sheet fixed bottom-0 left-0 right-0 z-50 w-full max-w-md mx-auto bg-[#182232] rounded-t-2xl border-t border-slate-700 shadow-2xl flex flex-col">
+<div class="p-3 border-b border-slate-700 flex justify-between items-center flex-shrink-0">
+<h3 class="font-bold text-sm">Add Money</h3>
+<button onclick="closeAll()" class="w-7 h-7 rounded-full bg-slate-800 text-slate-400 flex items-center justify-center"><i class="fa-solid fa-xmark text-xs"></i></button>
+</div>
+<div class="p-4 overflow-y-auto pb-6 text-xs space-y-3">
+<div class="bg-slate-900/80 rounded-xl p-3 border border-slate-700">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<div id="mIcon" class="w-9 h-9 rounded-lg bg-pink-500/20 text-pink-500 flex items-center justify-center text-base"><i class="fa-solid fa-wallet"></i></div>
+<div>
+<p id="mName" class="text-[11px] text-slate-300">bKash Personal</p>
+<h2 id="mNum" class="text-sm font-bold text-yellow-400">---</h2>
+</div>
+</div>
+<button onclick="copyNum()" class="text-slate-300 bg-slate-800 border border-slate-700 px-2.5 py-1 rounded text-[10px] font-semibold">Copy</button>
+</div>
+</div>
+<div>
+<label class="block text-slate-300 font-semibold mb-1.5 text-[11px]">Payment Method</label>
+<div class="grid grid-cols-3 gap-2">
+<button id="pm-bkash" onclick="selPM('bkash')" class="py-2 rounded-xl border border-pink-500 text-pink-400 font-bold bg-pink-500/10 text-[11px]">bKash</button>
+<button id="pm-nagad" onclick="selPM('nagad')" class="py-2 rounded-xl border border-slate-700 text-slate-400 text-[11px]">Nagad</button>
+<button id="pm-rocket" onclick="selPM('rocket')" class="py-2 rounded-xl border border-slate-700 text-slate-400 text-[11px]">Rocket</button>
+</div>
+</div>
+<div>
+<label class="block text-slate-300 mb-1.5 text-[11px]">Amount (৳)</label>
+<input type="number" id="dAmount" placeholder="e.g. 50" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-white focus:outline-none focus:border-rose-500">
+<p id="minDepText" class="text-[10px] text-slate-500 mt-1"></p>
+</div>
+<div>
+<label class="block text-slate-300 mb-1.5 text-[11px]">TrxID</label>
+<input type="text" id="dTrx" placeholder="e.g. 9F3K2L8MNO" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-white focus:outline-none focus:border-rose-500">
+</div>
+<button onclick="submitDep()" id="depBtn" class="btn-rose w-full text-white font-extrabold py-3 rounded-xl text-sm disabled:opacity-60">
+Submit Deposit
+</button>
+</div>
+</div>
+
+<!-- WITHDRAW -->
+<div id="mWithdraw" class="bottom-sheet fixed bottom-0 left-0 right-0 z-50 w-full max-w-md mx-auto bg-[#182232] rounded-t-2xl border-t border-slate-700 shadow-2xl">
+<div class="p-3 border-b border-slate-700 flex justify-between items-center">
+<h3 class="font-bold text-sm text-emerald-400">Withdraw Money</h3>
+<button onclick="closeAll()" class="w-7 h-7 rounded-full bg-slate-800 text-slate-400 flex items-center justify-center"><i class="fa-solid fa-xmark text-xs"></i></button>
+</div>
+<div class="p-4 space-y-3 text-xs">
+<div>
+<label class="block text-slate-300 mb-1 text-[11px]">Method</label>
+<select id="wMethod" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-white">
+<option value="bKash">bKash Personal</option>
+<option value="Nagad">Nagad Personal</option>
+<option value="Rocket">Rocket Personal</option>
+</select>
+</div>
+<div>
+<label class="block text-slate-300 mb-1 text-[11px]">Number</label>
+<input type="text" id="wNumber" placeholder="01700000000" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-white">
+</div>
+<div>
+<label class="block text-slate-300 mb-1 text-[11px]">Amount (min ৳<span id="minWdLabel">50</span>)</label>
+<input type="number" id="wAmount" placeholder="50" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-white">
+</div>
+<button onclick="submitWd()" id="wdBtn" class="btn-emerald w-full text-white font-bold py-3 rounded-lg disabled:opacity-60">Submit Withdraw</button>
+</div>
+</div>
+
+<!-- BONUS -->
+<div id="mBonus" class="bottom-sheet fixed bottom-0 left-0 right-0 z-50 w-full max-w-md mx-auto bg-gradient-to-b from-[#182232] to-[#111827] rounded-t-2xl border-t border-yellow-500/40 shadow-2xl">
+<div class="p-3 border-b border-slate-700 flex justify-between items-center">
+<h3 class="font-bold text-sm text-yellow-400"><i class="fa-solid fa-gift mr-1"></i> Daily Bonus</h3>
+<button onclick="closeAll()" class="w-7 h-7 rounded-full bg-slate-800 text-slate-400 flex items-center justify-center"><i class="fa-solid fa-xmark text-xs"></i></button>
+</div>
+<div class="p-5 text-center space-y-3">
+<div id="bonusIcon" class="w-20 h-20 mx-auto bg-gradient-to-tr from-yellow-500/30 to-orange-500/20 rounded-full flex items-center justify-center text-4xl border-4 border-yellow-500/30">
+<i class="fa-solid fa-gift text-yellow-400"></i>
+</div>
+<h4 class="font-black text-lg">Claim ৳<span id="bonusAmtLabel">5</span> Daily!</h4>
+<p class="text-[10px] text-slate-400">প্রতিদিন একবার claim করতে পারবেন</p>
+<div id="bonusStatus" class="text-xs text-slate-400"><i class="fa-solid fa-spinner fa-spin"></i> Checking...</div>
+<button id="claimBtn" onclick="claimBonus()" class="w-full bg-gradient-to-r from-yellow-500 to-orange-500 text-white font-black py-3.5 rounded-xl text-sm disabled:opacity-50">
+<i class="fa-solid fa-hand-holding-heart mr-1"></i> Claim Bonus
+</button>
+</div>
+</div>
+
+<!-- PROFILE -->
+<div id="mProfile" class="bottom-sheet fixed bottom-0 left-0 right-0 z-50 w-full max-w-md mx-auto bg-[#182232] rounded-t-2xl border-t border-slate-700 shadow-2xl flex flex-col">
+<div class="p-3 border-b border-slate-700 flex justify-between items-center">
+<h3 class="font-bold text-sm"><i class="fa-solid fa-user text-emerald-400 mr-1"></i> Edit Profile</h3>
+<button onclick="closeAll()" class="w-7 h-7 rounded-full bg-slate-800 text-slate-400 flex items-center justify-center"><i class="fa-solid fa-xmark text-xs"></i></button>
+</div>
+<div class="p-4 space-y-3 text-xs overflow-y-auto">
+<div class="text-center">
+<div id="pfAvatar" class="w-16 h-16 mx-auto rounded-full bg-gradient-to-tr from-emerald-500 to-blue-500 flex items-center justify-center text-2xl font-black mb-2">U</div>
+<p class="text-[10px] text-slate-500" id="pfEmail">loading...</p>
+</div>
+<div>
+<label class="block text-slate-300 mb-1 text-[11px]">Your Name</label>
+<input type="text" id="pfName" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-2.5 text-white focus:outline-none focus:border-emerald-500">
+</div>
+<div>
+<label class="block text-slate-300 mb-1 text-[11px]">Free Fire IGN</label>
+<input type="text" id="pfIgn" placeholder="e.g. OP_SHOVO_FF" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-2.5 text-white focus:outline-none focus:border-emerald-500">
+</div>
+<div>
+<label class="block text-slate-300 mb-1 text-[11px]">Phone</label>
+<input type="tel" id="pfPhone" placeholder="01XXXXXXXXX" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-2.5 text-white focus:outline-none focus:border-emerald-500">
+</div>
+<button onclick="saveProfile()" id="pfSave" class="btn-emerald w-full text-white font-bold py-3 rounded-xl">
+<i class="fa-solid fa-check mr-1"></i> Save Profile
+</button>
+</div>
+</div>
+
+<!-- RULES -->
+<div id="mRules" class="bottom-sheet fixed bottom-0 left-0 right-0 z-50 w-full max-w-md mx-auto bg-[#182232] rounded-t-2xl border-t border-slate-700 shadow-2xl max-h-[85vh] overflow-y-auto">
+<div class="p-3 border-b border-slate-700 flex justify-between items-center sticky top-0 bg-[#182232]">
+<h3 class="font-bold text-sm">📖 Rules & Terms</h3>
+<button onclick="closeAll()" class="w-7 h-7 rounded-full bg-slate-800 text-slate-400 flex items-center justify-center"><i class="fa-solid fa-xmark text-xs"></i></button>
+</div>
+<div class="p-4 text-xs text-slate-300 space-y-3">
+<div class="bg-slate-900/60 border border-slate-700/60 rounded-lg p-3">
+<h4 class="font-bold text-yellow-400 mb-1">🎮 Game Rules</h4>
+<ul class="space-y-1 list-disc list-inside text-[11px]">
+<li>Room ID ১০ মিনিট আগে দেওয়া হবে</li>
+<li>Hack/Emulator নিষেধ</li>
+<li>সঠিক FF IGN দিন</li>
+</ul>
+</div>
+<div class="bg-slate-900/60 border border-slate-700/60 rounded-lg p-3">
+<h4 class="font-bold text-emerald-400 mb-1">💰 Prize</h4>
+<ul class="space-y-1 list-disc list-inside text-[11px]">
+<li>Prize ২৪ ঘণ্টার মধ্যে wallet-এ যাবে</li>
+<li>Screenshot upload করতে হবে</li>
+</ul>
+</div>
+<div class="bg-slate-900/60 border border-slate-700/60 rounded-lg p-3">
+<h4 class="font-bold text-rose-400 mb-1">⚠️ Restrictions</h4>
+<ul class="space-y-1 list-disc list-inside text-[11px]">
+<li>Multiple account নিষেধ</li>
+<li>Cheating = Permanent Ban</li>
+</ul>
+</div>
+</div>
+</div>
+
+<!-- NOTIFICATIONS -->
+<div id="mNotif" class="bottom-sheet fixed bottom-0 left-0 right-0 z-50 w-full max-w-md mx-auto bg-[#182232] rounded-t-2xl border-t border-blue-500/40 shadow-2xl max-h-[80vh] flex flex-col">
+<div class="p-3 border-b border-slate-700 flex justify-between items-center flex-shrink-0">
+<h3 class="font-bold text-sm"><i class="fa-solid fa-bell text-blue-400 mr-1"></i> Notifications</h3>
+<button onclick="closeAll()" class="w-7 h-7 rounded-full bg-slate-800 text-slate-400 flex items-center justify-center"><i class="fa-solid fa-xmark text-xs"></i></button>
+</div>
+<div class="p-4 space-y-2 overflow-y-auto" id="notifList">
+<div class="shimmer h-16"></div>
+</div>
+</div>
+
+<!-- SCREENSHOT UPLOAD -->
+<div id="mScreenshot" class="bottom-sheet fixed bottom-0 left-0 right-0 z-50 w-full max-w-md mx-auto bg-[#182232] rounded-t-2xl border-t border-emerald-500/40 shadow-2xl">
+<div class="p-3 border-b border-slate-700 flex justify-between items-center">
+<h3 class="font-bold text-sm"><i class="fa-solid fa-cloud-arrow-up text-emerald-400 mr-1"></i> Upload Screenshot</h3>
+<button onclick="closeAll()" class="w-7 h-7 rounded-full bg-slate-800 text-slate-400 flex items-center justify-center"><i class="fa-solid fa-xmark text-xs"></i></button>
+</div>
+<div class="p-4 space-y-3 text-xs">
+<p id="ssTitle" class="text-slate-300 text-center text-[11px]"></p>
+<label for="ssFile" class="block cursor-pointer">
+<div class="border-2 border-dashed border-slate-600 rounded-2xl p-5 text-center">
+<i class="fa-solid fa-image text-3xl text-slate-500 mb-2"></i>
+<p class="text-sm font-bold">Tap to select screenshot</p>
+<p class="text-[10px] text-slate-500 mt-1">Max 300KB • JPG / PNG</p>
+</div>
+<input type="file" id="ssFile" accept="image/*" class="hidden" onchange="handleSS(event)">
+</label>
+<div id="ssPreviewWrap" class="hidden">
+<img id="ssPreview" class="w-full rounded-xl border border-slate-700">
+</div>
+<button onclick="submitSS()" id="ssBtn" disabled class="btn-emerald w-full text-white font-bold py-3 rounded-xl disabled:opacity-50">
+<i class="fa-solid fa-paper-plane mr-1"></i> Submit
+</button>
+</div>
+</div>
+
+<!-- TOAST -->
+<div id="toast" class="toast fixed top-5 left-1/2 z-[100] bg-emerald-600 text-white px-4 py-3 rounded-lg shadow-2xl flex items-center gap-2 w-[90%] max-w-sm">
+<i class="fa-solid fa-circle-check text-sm"></i>
+<p id="toastMsg" class="text-xs font-medium">Notification</p>
+</div>
+
+<div id="confettiContainer"></div>
+
+<!-- ═══════════════ SCRIPT ═══════════════ -->
+<script type="module">
+import { supabase } from './supabase-config.js';
+
+// ═══ STATE ═══
+let user = null, profile = null, prevPage = null;
+let matches = [], history = [], allNotifs = [], settings = {};
+let selectedMatch = null, selectedHistoryId = null, ssBase64 = null;
+let cdTimer = null, bannerTimer = null;
+let lastSeenNotif = parseInt(localStorage.getItem('lastNotif') || '0');
+const paymentM = {
+    bkash:  { name: 'bKash Personal',  num: '01700000000', color: 'text-pink-500 bg-pink-500/20' },
+    nagad:  { name: 'Nagad Personal',  num: '01800000000', color: 'text-orange-500 bg-orange-500/20' },
+    rocket: { name: 'Rocket Personal', num: '01900000000', color: 'text-purple-500 bg-purple-500/20' }
+};
+let selPM = 'bkash';
+
+// ═══ AUTH ═══
+supabase.auth.getSession().then(async ({ data: { session } }) => {
+    if (!session) { window.location.href = 'index.html'; return; }
+    user = session.user;
+    await bootstrap();
+});
+
+async function bootstrap() {
+    // Load profile
+    const { data: p } = await supabase.from('profiles').select('*').eq('id', user.id).single();
+    if (p) { profile = p; renderUser(); }
+    if (p?.banned) { showBan(p); return; }
+
+    // Real-time profile
+    supabase.channel('profile').on('postgres_changes', { event: '*', schema: 'public', table: 'profiles', filter: `id=eq.${user.id}` }, (payload) => {
+        profile = payload.new;
+        if (profile.banned) { showBan(profile); return; }
+        renderUser();
+    }).subscribe();
+
+    // Load settings
+    const { data: s } = await supabase.from('settings').select('*').eq('id', 1).single();
+    if (s) {
+        settings = s;
+        document.getElementById('noticeText').innerText = s.notice_text || '';
+        document.getElementById('minDepText').innerText = `সর্বনিম্ন ৳${s.min_deposit} deposit`;
+        document.getElementById('minWdLabel').innerText = s.min_withdraw;
+        document.getElementById('bonusAmtLabel').innerText = s.daily_bonus;
+        paymentM.bkash.num = s.bkash_number;
+        paymentM.nagad.num = s.nagad_number;
+        paymentM.rocket.num = s.rocket_number;
+        updatePaymentUI();
+    }
+
+    // Load matches (real-time)
+    loadMatches();
+    supabase.channel('matches').on('postgres_changes', { event: '*', schema: 'public', table: 'tournaments' }, loadMatches).subscribe();
+
+    // Load history
+    loadHistory();
+    supabase.channel('history').on('postgres_changes', { event: '*', schema: 'public', table: 'history', filter: `user_id=eq.${user.id}` }, loadHistory).subscribe();
+
+    // Load notifications
+    loadNotifs();
+    supabase.channel('notifs').on('postgres_changes', { event: '*', schema: 'public', table: 'notifications' }, loadNotifs).subscribe();
+
+    updateBonusBadge();
+    document.getElementById('loadingScreen').classList.add('hide');
+    setTimeout(() => document.getElementById('loadingScreen').style.display = 'none', 400);
+}
+
+// ═══ RENDER USER ═══
+function renderUser() {
+    if (!profile) return;
+    document.getElementById('userName').innerText = profile.name || 'User';
+    document.getElementById('userBalance').innerText = (profile.balance || 0).toFixed(2);
+    document.getElementById('walletBalance').innerText = (profile.balance || 0).toFixed(2);
+    document.getElementById('refCode').innerText = profile.refer_code || '------';
+    document.getElementById('pfAvatar').innerText = (profile.name || 'U').charAt(0).toUpperCase();
+    document.getElementById('pfEmail').innerText = profile.email || '';
+    document.getElementById('quickWins').innerText = profile.wins || 0;
+    document.getElementById('quickPlayed').innerText = profile.played || 0;
+    document.getElementById('quickEarned').innerText = '৳' + (profile.earned || 0);
+    updateBonusBadge();
+}
+
+function updateBonusBadge() {
+    const dot = document.getElementById('bonusDot');
+    if (!dot || !profile) return;
+    const last = profile.last_bonus_at ? new Date(profile.last_bonus_at) : null;
+    dot.style.display = (!last || (Date.now() - last.getTime()) > 86400000) ? 'block' : 'none';
+}
+
+// ═══ MATCHES ═══
+async function loadMatches() {
+    const { data } = await supabase.from('tournaments').select('*').order('match_time', { ascending: true });
+    matches = data || [];
+    document.getElementById('brCount').innerText = matches.filter(m => m.cat === 'BR').length;
+    document.getElementById('csCount').innerText = matches.filter(m => m.cat === 'CS').length;
+    renderList('BR', 'brList');
+    renderList('CS', 'csList');
+}
+
+function renderList(cat, containerId) {
+    const c = document.getElementById(containerId);
+    if (!c) return;
+    const list = matches.filter(m => m.cat === cat);
+    if (!list.length) {
+        c.innerHTML = `<div class="text-center py-8 bg-slate-800/40 rounded-xl border border-slate-700/50"><i class="fa-solid fa-gamepad text-3xl text-slate-600 mb-2"></i><p class="text-xs text-slate-400">কোনো ম্যাচ নেই</p></div>`;
+        return;
+    }
+    c.innerHTML = list.map((m, i) => {
+        const pct = Math.min(100, Math.round(((m.joined||0) / (m.total||50)) * 100));
+        const full = (m.joined||0) >= (m.total||50);
+        const almostFull = pct >= 80;
+        return `
+        <div onclick="openDetails('${m.id}','${cat.toLowerCase()}')" class="match-card bounce-in glass rounded-xl p-3.5 border border-slate-700/60 cursor-pointer ${cat==='BR'?'left-bar-br':'left-bar-cs'}" style="animation-delay:${i*60}ms">
+            <div class="flex justify-between items-start mb-2">
+                <div class="flex-1">
+                    <h4 class="font-bold text-sm">${m.title}</h4>
+                    <p class="text-[10px] text-slate-400 mt-0.5"><i class="fa-solid fa-map-location-dot mr-1 text-emerald-400"></i>${m.map} • ${m.type}</p>
+                </div>
+                <span class="text-[9px] bg-rose-500/10 text-rose-400 px-1.5 py-0.5 rounded font-bold border border-rose-500/20 whitespace-nowrap">${m.time||''}</span>
+            </div>
+            ${full ? `<div class="my-1.5 bg-rose-500/10 border border-rose-500/30 rounded-lg p-1.5 text-center"><span class="text-[10px] font-bold text-rose-400"><i class="fa-solid fa-lock"></i> MATCH FULL</span></div>` : almostFull ? `<div class="my-1.5 bg-amber-500/10 border border-amber-500/30 rounded-lg p-1.5 text-center"><span class="text-[10px] font-bold text-amber-400"><i class="fa-solid fa-fire"></i> Almost Full! ${(m.total||50)-(m.joined||0)} spots left</span></div>` : ''}
+            <div class="my-2">
+                <div class="flex justify-between text-[9px] text-slate-400 mb-1">
+                    <span>Spots Filled</span>
+                    <span class="font-bold ${almostFull?'text-amber-400':'text-emerald-400'}">${m.joined||0}/${m.total||50}</span>
+                </div>
+                <div class="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden">
+                    <div class="h-full ${almostFull?'bg-gradient-to-r from-amber-500 to-rose-500':'bg-gradient-to-r from-emerald-500 to-teal-400'} rounded-full" style="width:${pct}%"></div>
+                </div>
+            </div>
+            <div class="grid grid-cols-2 gap-2 my-2 bg-slate-800/50 p-2 rounded-lg border border-slate-700/40 text-[10px]">
+                <div><p class="text-slate-400">Prize</p><p class="font-bold text-yellow-400">৳${m.prize}</p></div>
+                <div><p class="text-slate-400">Per Kill</p><p class="font-bold text-rose-400">৳${m.kill}</p></div>
+            </div>
+            <div class="w-full ${full?'bg-slate-700':'btn-emerald'} text-white font-bold py-2 rounded-lg text-[11px] text-center flex items-center justify-center gap-1.5">
+                <span>${full?'Match Full':'View Details'}</span>
+                <i class="fa-solid fa-arrow-right text-[9px]"></i>
+            </div>
+        </div>`;
+    }).join('');
+}
+
+// ═══ MATCH DETAILS ═══
+window.openDetails = function(id, from) {
+    selectedMatch = matches.find(m => m.id === id);
+    if (!selectedMatch) return toast('Match পাওয়া যায়নি!');
+    prevPage = from;
+    document.getElementById('dTitle').innerText = selectedMatch.title;
+    document.getElementById('dSub').innerHTML = `<i class="fa-solid fa-map-location-dot text-emerald-400 mr-1"></i>${selectedMatch.map} • ${selectedMatch.type}`;
+    document.getElementById('dTime').innerText = selectedMatch.time || '';
+    document.getElementById('dPrize').innerText = '৳' + selectedMatch.prize;
+    document.getElementById('dKill').innerText = '৳' + selectedMatch.kill;
+    document.getElementById('dFee').innerText = '৳' + selectedMatch.fee;
+    document.getElementById('dIgn').value = profile?.ff_ign || '';
+    updateDetailSlots();
+    startCD();
+    nav('details');
+};
+
+function updateDetailSlots() {
+    const m = selectedMatch;
+    document.getElementById('dSlots').innerText = `${m.joined||0}/${m.total||50}`;
+    document.getElementById('dProgress').style.width = `${Math.min(100, ((m.joined||0)/(m.total||50))*100)}%`;
+}
+
+function startCD() {
+    if (cdTimer) clearInterval(cdTimer);
+    const el = document.getElementById('dCountdown');
+    if (!selectedMatch?.match_time) { el.innerText = 'TBA'; return; }
+    const t = new Date(selectedMatch.match_time).getTime();
+    const upd = () => {
+        const r = t - Date.now();
+        if (r <= 0) { el.innerText = 'LIVE'; el.classList.add('text-rose-400'); return; }
+        const s = Math.floor(r/1000), h = Math.floor(s/3600), m2 = Math.floor((s%3600)/60), sec = s%60;
+        el.innerText = h > 0 ? `${String(h).padStart(2,'0')}:${String(m2).padStart(2,'0')}:${String(sec).padStart(2,'0')}` : `${String(m2).padStart(2,'0')}:${String(sec).padStart(2,'0')}`;
+    };
+    upd();
+    cdTimer = setInterval(upd, 1000);
+}
+
+window.joinMatch = async function() {
+    if (!selectedMatch || !profile) return;
+    const ign = document.getElementById('dIgn').value.trim();
+    if (!ign) return toast('IGN দিন!');
+    if ((profile.balance||0) < selectedMatch.fee) return toast('Balance যথেষ্ট নয়!');
+    if ((selectedMatch.joined||0) >= (selectedMatch.total||50)) return toast('Match Full!');
+
+    const btn = document.getElementById('dJoinBtn');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span> Joining...';
+    try {
+        // Insert history
+        const { error: hErr } = await supabase.from('history').insert({
+            user_id: user.id,
+            tournament_id: selectedMatch.id,
+            match_title: selectedMatch.title,
+            cat: selectedMatch.cat,
+            map: selectedMatch.map,
+            type: selectedMatch.type,
+            ign: ign,
+            fee: selectedMatch.fee
+        });
+        if (hErr) throw hErr;
+
+        // Deduct balance + increment joined
+        await supabase.from('profiles').update({
+            balance: (profile.balance || 0) - selectedMatch.fee,
+            played: (profile.played || 0) + 1,
+            ff_ign: ign
+        }).eq('id', user.id);
+
+        await supabase.from('tournaments').update({
+            joined: (selectedMatch.joined || 0) + 1
+        }).eq('id', selectedMatch.id);
+
+        showConfetti();
+        toast('🎉 Successfully Joined!');
+        setTimeout(() => nav('history'), 800);
+    } catch (e) {
+        console.error(e);
+        toast('❌ ' + (e.message || 'Error'));
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fa-solid fa-bolt mr-1"></i> Confirm & Join';
+    }
+};
+
+// ═══ HISTORY ═══
+async function loadHistory() {
+    const { data } = await supabase.from('history').select('*').eq('user_id', user.id).order('joined_at', { ascending: false });
+    history = data || [];
+    renderHistory();
+}
+
+function renderHistory() {
+    const c = document.getElementById('historyList');
+    if (!history.length) {
+        c.innerHTML = `<div class="text-center py-10 glass rounded-xl"><i class="fa-solid fa-clock-rotate-left text-3xl text-slate-600 mb-2"></i><p class="text-xs text-slate-400">এখনো কোনো ম্যাচ join করেননি</p></div>`;
+        return;
+    }
+    c.innerHTML = history.map(h => {
+        const badge = h.cancelled && h.refunded ? '<span class="bg-emerald-500/20 text-emerald-400 text-[9px] px-1.5 py-0.5 rounded-full font-bold">REFUNDED</span>'
+            : h.cancelled ? '<span class="bg-rose-500/20 text-rose-400 text-[9px] px-1.5 py-0.5 rounded-full font-bold">CANCELLED</span>'
+            : h.result === 'win' ? '<span class="bg-emerald-500/20 text-emerald-400 text-[9px] px-1.5 py-0.5 rounded-full font-bold">WINNER 🏆</span>'
+            : h.result === 'lost' ? '<span class="bg-rose-500/20 text-rose-400 text-[9px] px-1.5 py-0.5 rounded-full font-bold">LOST</span>'
+            : '<span class="bg-yellow-500/20 text-yellow-400 text-[9px] px-1.5 py-0.5 rounded-full font-bold">PENDING</span>';
+        return `
+        <div class="bounce-in glass rounded-xl p-3.5 border ${h.refunded?'border-emerald-500/60':h.cancelled?'border-rose-500/50':'border-emerald-500/30'}">
+            <div class="flex justify-between items-start mb-1.5">
+                <div class="flex-1">
+                    <h4 class="font-bold text-sm">${h.match_title||'Match'}</h4>
+                    <p class="text-[10px] text-slate-400 mt-0.5"><i class="fa-solid fa-user mr-1"></i>IGN: <span class="text-emerald-400 font-semibold">${h.ign}</span></p>
+                </div>
+                ${badge}
+            </div>
+            <button onclick="openSS('${h.id}','${h.match_title}')" class="w-full ${h.screenshot_url?(h.verified?'bg-emerald-900/30 border-emerald-600':'bg-yellow-900/20 border-yellow-600/50'):'bg-slate-800 border-slate-600'} border text-slate-200 font-semibold py-2 rounded-lg text-[11px] flex items-center justify-center gap-2 mt-2">
+                ${h.screenshot_url ? (h.verified ? '<i class="fa-solid fa-circle-check text-emerald-400"></i> Verified' : '<i class="fa-solid fa-hourglass-half text-yellow-400"></i> Pending Verify') : '<i class="fa-solid fa-cloud-arrow-up text-emerald-400"></i> Upload Screenshot'}
+            </button>
+        </div>`;
+    }).join('');
+}
+
+// ═══ LEADERBOARD ═══
+window.loadLB = async function(type) {
+    ['balance','wins','played'].forEach(t => {
+        const b = document.getElementById('lbt-' + t);
+        if (t === type) b.className = 'py-2 text-[11px] font-bold bg-slate-800 text-white rounded-lg';
+        else b.className = 'py-2 text-[11px] text-slate-400 rounded-lg';
+    });
+    const c = document.getElementById('lbList');
+    c.innerHTML = '<div class="shimmer h-14"></div><div class="shimmer h-14"></div>';
+    const { data } = await supabase.from('profiles').select('id,name,balance,wins,played').order(type, { ascending: false }).limit(20);
+    if (!data?.length) { c.innerHTML = '<p class="text-center text-xs text-slate-500 py-4">No data</p>'; return; }
+    const medals = ['🥇','🥈','🥉'];
+    c.innerHTML = data.map((u, i) => {
+        const me = u.id === user.id;
+        const val = type === 'balance' ? '৳' + (u.balance||0).toFixed(0) : (u[type] || 0);
+        return `<div class="flex items-center gap-2.5 p-2.5 rounded-xl border ${me?'bg-emerald-500/10 border-emerald-400':'glass border-slate-700/60'}">
+            <div class="w-9 h-9 rounded-full flex items-center justify-center font-black text-xs ${i<3?'bg-yellow-500/20 text-yellow-400':me?'bg-emerald-500/20 text-emerald-400':'bg-slate-800 text-slate-400'}">${i<3?medals[i]:(i+1)}</div>
+            <div class="flex-1 min-w-0"><p class="font-bold text-xs truncate">${u.name||'User'}${me?' <span class="text-[8px] bg-emerald-500 text-white px-1 rounded">YOU</span>':''}</p></div>
+            <span class="font-black text-xs ${i<3?'text-yellow-400':me?'text-emerald-400':'text-slate-300'}">${val}</span>
+        </div>`;
+    }).join('');
+};
+
+// ═══ WALLET ═══
+window.loadTx = async function() {
+    const c = document.getElementById('txList');
+    c.innerHTML = '<div class="shimmer h-12"></div><div class="shimmer h-12"></div>';
+    const [{ data: deps }, { data: wds }] = await Promise.all([
+        supabase.from('deposits').select('*').eq('user_id', user.id).order('created_at', { ascending: false }).limit(20),
+        supabase.from('withdraws').select('*').eq('user_id', user.id).order('created_at', { ascending: false }).limit(20)
+    ]);
+    const tx = [
+        ...(deps||[]).map(d => ({ type: 'Deposit', amt: d.amount, st: d.status, d: d.created_at, sign: '+', col: 'text-rose-400', icon: 'fa-circle-down' })),
+        ...(wds||[]).map(w => ({ type: 'Withdraw', amt: w.amount, st: w.status, d: w.created_at, sign: '-', col: 'text-yellow-400', icon: 'fa-circle-up' })),
+        ...history.filter(h => h.prize_won > 0).map(h => ({ type: 'Match Win', amt: h.prize_won, st: 'won', d: h.result_at || h.joined_at, sign: '+', col: 'text-emerald-400', icon: 'fa-trophy' })),
+        ...history.filter(h => h.refunded).map(h => ({ type: 'Refund', amt: h.refund_amount||h.fee, st: 'refunded', d: h.refund_at||h.joined_at, sign: '+', col: 'text-emerald-400', icon: 'fa-hand-holding-dollar' }))
+    ].sort((a,b) => new Date(b.d||0) - new Date(a.d||0));
+
+    if (!tx.length) { c.innerHTML = '<p class="text-center text-xs text-slate-500 py-4">No transactions</p>'; return; }
+    c.innerHTML = tx.slice(0,20).map(t => `
+        <div class="glass p-2.5 rounded-lg border border-slate-800 flex justify-between items-center">
+            <div class="flex items-center gap-2 flex-1 min-w-0">
+                <div class="w-7 h-7 rounded-full bg-slate-800 flex items-center justify-center ${t.col} flex-shrink-0">
+                    <i class="fa-solid ${t.icon} text-[10px]"></i>
+                </div>
+                <div class="min-w-0 flex-1">
+                    <p class="font-bold text-[10px]">${t.type}</p>
+                    <p class="text-[9px] text-slate-500">${new Date(t.d||0).toLocaleDateString('en-GB')} • ${t.st}</p>
+                </div>
+            </div>
+            <span class="font-bold ${t.sign==='+'?'text-emerald-400':'text-rose-400'} text-[11px]">${t.sign}৳${t.amt}</span>
+        </div>`).join('');
+};
+
+// ═══ REFER ═══
+async function loadReferrals() {
+    const { data } = await supabase.from('profiles').select('id,name,email').eq('referred_by', user.id);
+    document.getElementById('refCount').innerText = data?.length || 0;
+    document.getElementById('refEarned').innerText = '৳' + ((data?.length || 0) * 10);
+    const c = document.getElementById('refList');
+    if (!data?.length) { c.innerHTML = '<p class="text-[10px] text-slate-500 text-center py-2">এখনো কেউ নেই</p>'; return; }
+    c.innerHTML = data.map(u => `
+        <div class="flex items-center gap-2 bg-slate-900/60 border border-slate-700 rounded-lg p-2">
+            <div class="w-7 h-7 rounded-full bg-gradient-to-tr from-purple-500 to-blue-500 flex items-center justify-center text-[10px] font-black">${(u.name||'U').charAt(0).toUpperCase()}</div>
+            <div class="flex-1 min-w-0"><p class="text-[10px] font-bold truncate">${u.name}</p><p class="text-[9px] text-slate-500 truncate">${u.email||''}</p></div>
+            <span class="text-[10px] text-emerald-400 font-bold">+৳10</span>
+        </div>`).join('');
+}
+
+window.copyRef = function() {
+    navigator.clipboard.writeText(profile?.refer_code || '').then(() => toast('✅ Code copied!'));
+};
+
+window.shareRef = function() {
+    const code = profile?.refer_code || '';
+    const url = window.location.origin + '/index.html?ref=' + code;
+    const text = `🎮 SS ZoneX - Free Fire Tournament\n\n🔥 Refer code: ${code}\n💰 ৳10 bonus পাবেন!\n\n${url}`;
+    window.open('https://wa.me/?text=' + encodeURIComponent(text), '_blank');
+};
+
+// ═══ NOTIFICATIONS ═══
+async function loadNotifs() {
+    const { data } = await supabase.from('notifications').select('*').order('created_at', { ascending: false }).limit(30);
+    allNotifs = data || [];
+    const dot = document.getElementById('notifDot');
+    if (allNotifs.length && new Date(allNotifs[0].created_at).getTime() > lastSeenNotif) dot.classList.remove('hidden');
+    else dot.classList.add('hidden');
+    renderNotifs();
+}
+
+function renderNotifs() {
+    const c = document.getElementById('notifList');
+    if (!allNotifs.length) { c.innerHTML = '<p class="text-center text-xs text-slate-500 py-6">কোনো notification নেই</p>'; return; }
+    const styles = {
+        info: 'border-blue-500/40 bg-blue-500/5 text-blue-400 fa-circle-info',
+        success: 'border-emerald-500/40 bg-emerald-500/5 text-emerald-400 fa-circle-check',
+        warning: 'border-yellow-500/40 bg-yellow-500/5 text-yellow-400 fa-triangle-exclamation',
+        danger: 'border-rose-500/40 bg-rose-500/5 text-rose-400 fa-circle-exclamation'
+    };
+    c.innerHTML = allNotifs.map(n => {
+        const s = styles[n.type] || styles.info;
+        const [border, bg, col, icon] = s.split(' ');
+        return `<div class="${bg} border ${border} rounded-xl p-3">
+            <div class="flex items-start gap-2">
+                <i class="fa-solid ${icon} ${col} text-sm mt-0.5"></i>
+                <div class="flex-1"><p class="font-bold text-xs">${n.title}</p><p class="text-[11px] text-slate-300 mt-1">${n.message}</p><p class="text-[9px] text-slate-500 mt-1">${new Date(n.created_at).toLocaleDateString('en-GB')}</p></div>
+            </div>
+        </div>`;
+    }).join('');
+}
+
+window.openNotif = function() {
+    openSheet('mNotif');
+    if (allNotifs.length) {
+        lastSeenNotif = new Date(allNotifs[0].created_at).getTime();
+        localStorage.setItem('lastNotif', lastSeenNotif);
+        setTimeout(() => document.getElementById('notifDot').classList.add('hidden'), 800);
+    }
+};
+
+// ═══ BONUS ═══
+window.openBonus = function() {
+    openSheet('mBonus');
+    updateBonusUI();
+};
+
+function updateBonusUI() {
+    if (!profile) return;
+    const last = profile.last_bonus_at ? new Date(profile.last_bonus_at) : null;
+    const diff = last ? Date.now() - last.getTime() : Infinity;
+    const can = diff > 86400000;
+    const st = document.getElementById('bonusStatus');
+    const btn = document.getElementById('claimBtn');
+    if (can) {
+        st.innerHTML = '<span class="text-emerald-400 font-bold"><i class="fa-solid fa-check-circle"></i> এখন claim করতে পারেন!</span>';
+        btn.disabled = false;
+    } else {
+        const rem = 86400000 - diff;
+        const h = Math.floor(rem/3600000), m = Math.floor((rem%3600000)/60000);
+        st.innerHTML = `<span class="text-slate-400">পরের bonus: <b class="text-yellow-400">${h}h ${m}m</b></span>`;
+        btn.disabled = true;
+    }
+}
+
+window.claimBonus = async function() {
+    try {
+        const amt = settings.daily_bonus || 5;
+        await supabase.from('profiles').update({
+            balance: (profile.balance || 0) + amt,
+            last_bonus_at: new Date().toISOString()
+        }).eq('id', user.id);
+        showConfetti();
+        toast(`🎉 ৳${amt} Bonus!`);
+        setTimeout(closeAll, 1200);
+    } catch (e) { toast('❌ ' + e.message); }
+};
+
+// ═══ PROFILE ═══
+window.openProfileModal = function() {
+    if (!profile) return;
+    document.getElementById('pfName').value = profile.name || '';
+    document.getElementById('pfIgn').value = profile.ff_ign || '';
+    document.getElementById('pfPhone').value = profile.phone || '';
+    openSheet('mProfile');
+};
+
+window.saveProfile = async function() {
+    const name = document.getElementById('pfName').value.trim();
+    if (!name) return toast('Name দিন!');
+    const btn = document.getElementById('pfSave');
+    btn.disabled = true;
+    try {
+        await supabase.from('profiles').update({
+            name,
+            ff_ign: document.getElementById('pfIgn').value.trim(),
+            phone: document.getElementById('pfPhone').value.trim()
+        }).eq('id', user.id);
+        toast('✅ Saved!');
+        setTimeout(closeAll, 700);
+    } catch (e) { toast('❌ ' + e.message); }
+    finally { btn.disabled = false; }
+};
+
+// ═══ RULES ═══
+window.openRules = () => openSheet('mRules');
+
+// ═══ DEPOSIT ═══
+window.openDeposit = function() { openSheet('mDeposit'); };
+
+window.selPM = function(key) {
+    selPM = key;
+    updatePaymentUI();
+};
+
+function updatePaymentUI() {
+    const m = paymentM[selPM];
+    document.getElementById('mName').innerText = m.name;
+    document.getElementById('mNum').innerText = m.num;
+    document.getElementById('mIcon').className = `w-9 h-9 rounded-lg flex items-center justify-center text-base ${m.color}`;
+    ['bkash','nagad','rocket'].forEach(k => {
+        const b = document.getElementById('pm-' + k);
+        const isActive = k === selPM;
+        const colors = { bkash: 'border-pink-500 text-pink-400 bg-pink-500/10', nagad: 'border-orange-500 text-orange-400 bg-orange-500/10', rocket: 'border-purple-500 text-purple-400 bg-purple-500/10' };
+        b.className = isActive ? `py-2 rounded-xl border font-bold text-[11px] ${colors[k]}` : 'py-2 rounded-xl border border-slate-700 text-slate-400 text-[11px]';
+    });
+}
+
+window.copyNum = function() {
+    navigator.clipboard.writeText(paymentM[selPM].num).then(() => toast('✅ Number copied!'));
+};
+
+window.submitDep = async function() {
+    const amt = parseFloat(document.getElementById('dAmount').value);
+    const trx = document.getElementById('dTrx').value.trim();
+    if (!amt || amt < (settings.min_deposit || 20)) return toast(`সর্বনিম্ন ৳${settings.min_deposit||20}!`);
+    if (!trx) return toast('TrxID দিন!');
+    const btn = document.getElementById('depBtn');
+    btn.disabled = true;
+    try {
+        await supabase.from('deposits').insert({
+            user_id: user.id, user_name: profile.name, user_email: user.email,
+            amount: amt, method: selPM, trx_id: trx
+        });
+        toast(`৳${amt} Deposit request পাঠানো হয়েছে!`);
+        document.getElementById('dAmount').value = '';
+        document.getElementById('dTrx').value = '';
+        setTimeout(closeAll, 800);
+    } catch (e) { toast('❌ ' + e.message); }
+    finally { btn.disabled = false; }
+};
+
+// ═══ WITHDRAW ═══
+window.openWithdraw = () => openSheet('mWithdraw');
+
+window.submitWd = async function() {
+    const method = document.getElementById('wMethod').value;
+    const number = document.getElementById('wNumber').value.trim();
+    const amt = parseFloat(document.getElementById('wAmount').value);
+    if (!number || number.length < 11) return toast('সঠিক number দিন!');
+    if (!amt || amt < (settings.min_withdraw || 50)) return toast(`সর্বনিম্ন ৳${settings.min_withdraw||50}!`);
+    if (amt > (profile.balance || 0)) return toast('Balance যথেষ্ট নয়!');
+    const btn = document.getElementById('wdBtn');
+    btn.disabled = true;
+    try {
+        await supabase.from('withdraws').insert({
+            user_id: user.id, user_name: profile.name, user_email: user.email,
+            amount: amt, method, number
+        });
+        toast(`৳${amt} Withdraw request পাঠানো হয়েছে!`);
+        document.getElementById('wNumber').value = '';
+        document.getElementById('wAmount').value = '';
+        setTimeout(closeAll, 800);
+    } catch (e) { toast('❌ ' + e.message); }
+    finally { btn.disabled = false; }
+};
+
+// ═══ SCREENSHOT ═══
+window.openSS = function(histId, title) {
+    selectedHistoryId = histId;
+    ssBase64 = null;
+    document.getElementById('ssTitle').innerText = title;
+    document.getElementById('ssPreviewWrap').classList.add('hidden');
+    document.getElementById('ssBtn').disabled = true;
+    document.getElementById('ssFile').value = '';
+    openSheet('mScreenshot');
+};
+
+window.handleSS = function(e) {
+    const f = e.target.files[0];
+    if (!f) return;
+    if (f.size > 300 * 1024) { toast('❌ Max 300KB!'); return; }
+    const r = new FileReader();
+    r.onload = (ev) => {
+        ssBase64 = ev.target.result;
+        document.getElementById('ssPreview').src = ssBase64;
+        document.getElementById('ssPreviewWrap').classList.remove('hidden');
+        document.getElementById('ssBtn').disabled = false;
+    };
+    r.readAsDataURL(f);
+};
+
+window.submitSS = async function() {
+    if (!ssBase64 || !selectedHistoryId) return;
+    const btn = document.getElementById('ssBtn');
+    btn.disabled = true;
+    try {
+        await supabase.from('history').update({
+            screenshot_url: ssBase64,
+            verified: false
+        }).eq('id', selectedHistoryId);
+        toast('✅ Screenshot submitted!');
+        setTimeout(closeAll, 800);
+    } catch (e) { toast('❌ ' + e.message); }
+    finally { btn.disabled = false; }
+};
+
+// ═══ NAVIGATION ═══
+window.nav = function(page) {
+    if (profile?.banned) return;
+    document.querySelectorAll('.app-page').forEach(p => p.classList.add('hidden'));
+    const target = document.getElementById('page-' + page);
+    if (target) target.classList.remove('hidden');
+    ['home','history','leaderboard','wallet','refer'].forEach(p => {
+        const b = document.getElementById('bn-' + p);
+        if (!b) return;
+        b.className = (p === page) 
+            ? 'bottom-nav-btn ripple py-2.5 flex flex-col items-center gap-0.5 text-orange-500 active'
+            : 'bottom-nav-btn ripple py-2.5 flex flex-col items-center gap-0.5 text-slate-400';
+    });
+    document.getElementById('mainScroll').scrollTo({ top: 0, behavior: 'smooth' });
+    if (page === 'leaderboard') loadLB('balance');
+    if (page === 'wallet') loadTx();
+    if (page === 'refer') loadReferrals();
+};
+
+// ═══ MODAL HELPERS ═══
+function openSheet(id) {
+    document.getElementById('overlay').classList.remove('hidden');
+    setTimeout(() => {
+        document.getElementById('overlay').classList.remove('opacity-0');
+        document.getElementById(id).classList.add('open');
+    }, 10);
+}
+
+window.closeAll = function() {
+    document.getElementById('overlay').classList.add('opacity-0');
+    document.querySelectorAll('.bottom-sheet').forEach(s => s.classList.remove('open'));
+    setTimeout(() => document.getElementById('overlay').classList.add('hidden'), 300);
+};
+
+// ═══ TOAST ═══
+let toastT;
+window.toast = function(msg) {
+    clearTimeout(toastT);
+    document.getElementById('toastMsg').innerText = msg;
+    document.getElementById('toast').classList.add('show');
+    toastT = setTimeout(() => document.getElementById('toast').classList.remove('show'), 3000);
+};
+
+// ═══ CONFETTI ═══
+window.showConfetti = function() {
+    const c = document.getElementById('confettiContainer');
+    const colors = ['#FBBF24','#F59E0B','#10B981','#3B82F6','#EC4899','#8B5CF6'];
+    for (let i = 0; i < 40; i++) {
+        const p = document.createElement('div');
+        p.className = 'confetti-piece';
+        p.style.left = Math.random()*100 + 'vw';
+        p.style.background = colors[Math.floor(Math.random()*colors.length)];
+        p.style.animationDelay = Math.random()*0.5 + 's';
+        p.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+        c.appendChild(p);
+        setTimeout(() => p.remove(), 4000);
+    }
+};
+
+// ═══ BAN ═══
+function showBan(p) {
+    document.getElementById('banOverlay').classList.remove('hidden');
+    document.getElementById('banOverlay').classList.add('flex');
+    document.getElementById('banReason').innerText = p.ban_reason || 'Rules violation';
+    document.getElementById('banType').innerText = p.ban_type || 'Permanent';
+}
+
+// ═══ LOGOUT ═══
+window.logout = async function() {
+    if (!confirm('Logout করবেন?')) return;
+    if (cdTimer) clearInterval(cdTimer);
+    await supabase.auth.signOut();
+    window.location.href = 'index.html';
+};
+
+// Load transactions when wallet opens
+window.addEventListener('load', () => {
+    setTimeout(() => {
+        if (document.getElementById('page-home')?.classList.contains('hidden') === false) {
+            loadLB('balance');
+        }
+    }, 100);
+});
+</script>
+</body>
+</html>
