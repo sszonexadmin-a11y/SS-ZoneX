@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0B1120">
+<title>SS ZoneX — Admin</title>
+<link rel="icon" href="logo.png">
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+*{-webkit-tap-highlight-color:transparent;box-sizing:border-box}
+html,body{margin:0;padding:0;height:100%}
+body{background:#0B1120;color:#fff;font-family:'Inter','Hind Siliguri',sans-serif;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+::-webkit-scrollbar{width:8px;height:8px}
+::-webkit-scrollbar-track{background:#0F1B2E}
+::-webkit-scrollbar-thumb{background:#334155;border-radius:4px}
+::-webkit-scrollbar-thumb:hover{background:#475569}
+
+.bg-dark{background:#0B1120}
+.bg-card{background:#182232}
+.bg-sidebar{background:#0F1B2E}
+.border-c{border-color:#1E293B}
+
+.glass{background:rgba(24,34,50,.92);backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.08)}
+
+.btn-orange{background:linear-gradient(135deg,#F97316,#EA580C);box-shadow:0 6px 20px rgba(249,115,22,.35);transition:all .2s}
+.btn-orange:hover{transform:translateY(-1px);box-shadow:0 8px 24px rgba(249,115,22,.5)}
+.btn-orange:active{transform:translateY(0) scale(.98)}
+
+.btn-emerald{background:linear-gradient(135deg,#10B981,#059669);box-shadow:0 6px 20px rgba(16,185,129,.3);transition:all .2s}
+.btn-emerald:hover{transform:translateY(-1px)}
+.btn-emerald:active{transform:scale(.98)}
+
+.btn-rose{background:linear-gradient(135deg,#F43F5E,#E11D48);box-shadow:0 6px 20px rgba(244,63,94,.3);transition:all .2s}
+.btn-rose:hover{transform:translateY(-1px)}
+.btn-rose:active{transform:scale(.98)}
+
+.btn-blue{background:linear-gradient(135deg,#3B82F6,#2563EB);transition:all .2s}
+.btn-blue:active{transform:scale(.98)}
+
+.btn-ghost{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);transition:all .2s}
+.btn-ghost:hover{background:rgba(255,255,255,.1)}
+
+.sidebar-item{transition:all .2s;border-left:3px solid transparent}
+.sidebar-item:hover{background:rgba(249,115,22,.08);color:#F97316}
+.sidebar-item.active{background:rgba(249,115,22,.12);color:#F97316;border-left-color:#F97316}
+
+.sidebar{transform:translateX(-100%);transition:transform .3s cubic-bezier(.4,0,.2,1)}
+.sidebar.open{transform:translateX(0)}
+@media(min-width:1024px){.sidebar{transform:translateX(0)}}
+
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:40;opacity:0;pointer-events:none;transition:opacity .3s}
+.overlay.open{opacity:1;pointer-events:auto}
+@media(min-width:1024px){.overlay{display:none}}
+
+.app-page{display:none}
+.app-page.active{display:block;animation:fadeIn .3s}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+.shimmer{background:linear-gradient(90deg,#1e293b 25%,#334155 50%,#1e293b 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;border-radius:8px}
+@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+
+.table-wrap{overflow-x:auto;border-radius:12px}
+table{width:100%;border-collapse:collapse;font-size:13px}
+thead{background:#0F1B2E;position:sticky;top:0;z-index:5}
+thead th{padding:12px;text-align:left;font-weight:700;color:#94A3B8;text-transform:uppercase;font-size:11px;letter-spacing:.5px;white-space:nowrap}
+tbody tr{border-top:1px solid #1E293B;transition:background .2s}
+tbody tr:hover{background:rgba(249,115,22,.04)}
+tbody td{padding:12px;color:#E2E8F0;vertical-align:middle}
+
+.input{background:#0F1B2E;border:1px solid #334155;border-radius:10px;padding:10px 14px;color:#fff;font-size:13px;width:100%;transition:all .2s;font-family:inherit}
+.input:focus{outline:none;border-color:#F97316;box-shadow:0 0 0 3px rgba(249,115,22,.15)}
+.input::placeholder{color:#64748B}
+
+select.input{cursor:pointer}
+textarea.input{resize:vertical;min-height:80px}
+
+.badge{padding:3px 10px;border-radius:20px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;white-space:nowrap}
+.badge-pending{background:rgba(251,191,36,.15);color:#FBBF24;border:1px solid rgba(251,191,36,.3)}
+.badge-approved,.badge-won,.badge-refunded,.badge-active{background:rgba(16,185,129,.15);color:#10B981;border:1px solid rgba(16,185,129,.3)}
+.badge-rejected,.badge-banned,.badge-cancelled{background:rgba(244,63,94,.15);color:#F43F5E;border:1px solid rgba(244,63,94,.3)}
+.badge-lost{background:rgba(148,163,184,.15);color:#94A3B8;border:1px solid rgba(148,163,184,.3)}
+.badge-admin{background:rgba(139,92,246,.15);color:#A78BFA;border:1px solid rgba(139,92,246,.3)}
+
+.stat-card{background:#182232;border:1px solid #1E293B;border-radius:16px;padding:20px;position:relative;overflow:hidden;transition:all .3s}
+.stat-card:hover{transform:translateY(-2px);border-color:rgba(249,115,22,.4);box-shadow:0 8px 24px rgba(249,115,22,.1)}
+.stat-card::before{content:"";position:absolute;top:0;right:0;width:80px;height:80px;background:radial-gradient(circle,rgba(249,115,22,.15) 0%,transparent 70%);border-radius:50%}
+
+.modal{position:fixed;inset:0;z-index:100;display:none;align-items:center;justify-content:center;padding:16px}
+.modal.open{display:flex}
+.modal-bg{position:absolute;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(4px)}
+.modal-body{position:relative;background:#182232;border:1px solid #1E293B;border-radius:16px;width:100%;max-width:520px;max-height:90vh;overflow-y:auto;animation:modalIn .3s cubic-bezier(.34,1.56,.64,1)}
+@keyframes modalIn{from{opacity:0;transform:scale(.9)}to{opacity:1;transform:scale(1)}}
+
+.toast{position:fixed;top:16px;right:16px;z-index:200;padding:12px 18px;border-radius:10px;font-size:13px;font-weight:600;display:flex;align-items:center;gap:8px;transform:translateX(120%);transition:transform .4s cubic-bezier(.34,1.56,.64,1);max-width:380px}
+.toast.show{transform:translateX(0)}
+.toast.success{background:#059669;border:1px solid #10B981}
+.toast.error{background:#BE123C;border:1px solid #F43F5E}
+.toast.warn{background:#D97706;border:1px solid #FBBF24}
+.toast.info{background:#1D4ED8;border:1px solid #3B82F6}
+
+.spinner{display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+.empty{padding:48px 20px;text-align:center;color:#64748B}
+.empty i{font-size:42px;margin-bottom:12px;opacity:.4}
+
+.login-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;background:radial-gradient(circle at 30% 20%,rgba(249,115,22,.15) 0%,transparent 50%),radial-gradient(circle at 70% 80%,rgba(16,185,129,.1) 0%,transparent 50%),#0B1120}
+
+.chip{padding:4px 10px;border-radius:20px;font-size:11px;font-weight:600;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);cursor:pointer;transition:all .2s;user-select:none}
+.chip:hover{background:rgba(249,115,22,.15);border-color:rgba(249,115,22,.4);color:#F97316}
+.chip.active{background:rgba(249,115,22,.2);border-color:#F97316;color:#F97316}
+</style>
+</head>
+<body>
+
+<div id="toast" class="toast">
+<i id="toastIcon" class="fa-solid fa-info-circle"></i>
+<span id="toastMsg">Notification</span>
+</div>
+
+<div id="loginScreen" class="login-wrap">
+<div class="w-full max-w-md">
+<div class="bg-card border border-c rounded-3xl p-8 shadow-2xl">
+<div class="text-center mb-6">
+<div class="w-20 h-20 mx-auto rounded-2xl bg-gradient-to-br from-orange-500/20 to-orange-700/10 border border-orange-500/40 flex items-center justify-center mb-3">
+<i class="fa-solid fa-shield-halved text-orange-500 text-4xl"></i>
+</div>
+<h1 class="text-2xl font-black gradient-text">Admin Panel</h1>
+<p class="text-xs text-slate-500 mt-1">SS ZoneX Control Center</p>
+</div>
+
+<form id="loginForm" onsubmit="handleLogin(event)" class="space-y-4">
+<div>
+<label class="block text-xs text-slate-400 font-semibold mb-1.5">Email</label>
+<input type="email" id="loginEmail" required placeholder="admin@example.com" class="input">
+</div>
+<div>
+<label class="block text-xs text-slate-400 font-semibold mb-1.5">Password</label>
+<input type="password" id="loginPassword" required minlength="6" placeholder="••••••••" class="input">
+</div>
+<p id="loginError" class="text-xs text-rose-400 hidden"></p>
+<button type="submit" id="loginBtn" class="btn-orange w-full text-white font-bold py-3.5 rounded-xl text-sm">
+<i class="fa-solid fa-right-to-bracket mr-2"></i><span id="loginBtnText">Login</span>
+</button>
+</form>
+
+<div class="mt-6 pt-5 border-t border-c text-center">
+<button onclick="window.location.href='index.html'" class="text-xs text-slate-500 hover:text-orange-500">
+<i class="fa-solid fa-arrow-left mr-1"></i> User App-এ ফিরে যাও
+</button>
+</div>
+</div>
+</div>
+</div>
+
+<div id="mainApp" class="hidden">
+<div id="overlay" class="overlay" onclick="toggleSidebar(false)"></div>
+
+<aside id="sidebar" class="sidebar fixed top-0 left-0 bottom-0 w-64 bg-sidebar border-r border-c z-50 flex flex-col">
+<div class="p-5 border-b border-c flex items-center gap-3">
+<div class="w-10 h-10 rounded-xl bg-gradient-to-br from-orange-500/20 to-orange-700/10 border border-orange-500/40 flex items-center justify-center">
+<i class="fa-solid fa-shield-halved text-orange-500 text-lg"></i>
+</div>
+<div class="min-w-0">
+<h2 class="font-black text-sm gradient-text leading-tight">SS ZoneX</h2>
+<p class="text-[10px] text-slate-500 uppercase tracking-wider font-bold">Admin</p>
+</div>
+<button onclick="toggleSidebar(false)" class="lg:hidden ml-auto text-slate-500 hover:text-white w-8 h-8 rounded-lg flex items-center justify-center">
+<i class="fa-solid fa-xmark"></i>
+</button>
+</div>
+
+<nav class="flex-1 overflow-y-auto p-3 space-y-1">
+<div class="text-[10px] text-slate-600 uppercase font-bold tracking-wider px-3 py-2">Main</div>
+<button onclick="navigate('dashboard')" data-nav="dashboard" class="sidebar-item active w-full flex items-center gap-3 px-3 py-3 rounded-lg text-sm font-medium text-slate-300">
+<i class="fa-solid fa-chart-line w-5 text-center"></i> Dashboard
+</button>
+<button onclick="navigate('matches')" data-nav="matches" class="sidebar-item w-full flex items-center gap-3 px-3 py-3 rounded-lg text-sm font-medium text-slate-300">
+<i class="fa-solid fa-gamepad w-5 text-center"></i> Matches
+</button>
+<button onclick="navigate('users')" data-nav="users" class="sidebar-item w-full flex items-center gap-3 px-3 py-3 rounded-lg text-sm font-medium text-slate-300">
+<i class="fa-solid fa-users w-5 text-center"></i> Users
+</button>
+
+<div class="text-[10px] text-slate-600 uppercase font-bold tracking-wider px-3 py-2 mt-3">Finance</div>
+<button onclick="navigate('deposits')" data-nav="deposits" class="sidebar-item w-full flex items-center gap-3 px-3 py-3 rounded-lg text-sm font-medium text-slate-300">
+<i class="fa-solid fa-circle-down w-5 text-center text-rose-400"></i> Deposits
+<span id="badgeDeposits" class="ml-auto text-[10px] bg-rose-500 text-white px-1.5 py-0.5 rounded-full font-bold hidden">0</span>
+</button>
+<button onclick="navigate('withdraws')" data-nav="withdraws" class="sidebar-item w-full flex items-center gap-3 px-3 py-3 rounded-lg text-sm font-medium text-slate-300">
+<i class="fa-solid fa-circle-up w-5 text-center text-yellow-400"></i> Withdraws
+<span id="badgeWithdraws" class="ml-auto text-[10px] bg-rose-500 text-white px-1.5 py-0.5 rounded-full font-bold hidden">0</span>
+</button>
+
+<div class="text-[10px] text-slate-600 uppercase font-bold tracking-wider px-3 py-2 mt-3">Match</div>
+<button onclick="navigate('results')" data-nav="results" class="sidebar-item w-full flex items-center gap-3 px-3 py-3 rounded-lg text-sm font-medium text-slate-300">
+<i class="fa-solid fa-trophy w-5 text-center text-yellow-400"></i> Results
+</button>
+<button onclick="navigate('screenshots')" data-nav="screenshots" class="sidebar-item w-full flex items-center gap-3 px-3 py-3 rounded-lg text-sm font-medium text-slate-300">
+<i class="fa-solid fa-image w-5 text-center text-emerald-400"></i> Screenshots
+<span id="badgeScreenshots" class="ml-auto text-[10px] bg-rose-500 text-white px-1.5 py-0.5 rounded-full font-bold hidden">0</span>
+</button>
+
+<div class="text-[10px] text-slate-600 uppercase font-bold tracking-wider px-3 py-2 mt-3">System</div>
+<button onclick="navigate('notifications')" data-nav="notifications" class="sidebar-item w-full flex items-center gap-3 px-3 py-3 rounded-lg text-sm font-medium text-slate-300">
+<i class="fa-solid fa-bell w-5 text-center text-blue-400"></i> Notifications
+</button>
+<button onclick="navigate('settings')" data-nav="settings" class="sidebar-item w-full flex items-center gap-3 px-3 py-3 rounded-lg text-sm font-medium text-slate-300">
+<i class="fa-solid fa-gear w-5 text-center"></i> Settings
+</button>
+</nav>
+
+<div class="p-3 border-t border-c">
+<div class="flex items-center gap-3 p-3 rounded-xl bg-slate-800/50 mb-2">
+<div id="adminAvatar" class="w-9 h-9 rounded-full bg-gradient-to-tr from-orange-500 to-rose-500 flex items-center justify-center text-sm font-black">A</div>
+<div class="min-w-0 flex-1">
+<p id="adminName" class="text-xs font-bold truncate">Admin</p>
+<p id="adminEmail" class="text-[10px] text-slate-500 truncate">admin@</p>
+</div>
+</div>
+<button onclick="handleLogout()" class="w-full btn-ghost text-rose-400 text-xs font-bold py-2.5 rounded-lg flex items-center justify-center gap-2">
+<i class="fa-solid fa-right-from-bracket"></i> Logout
+</button>
+</div>
+</aside>
+
+<div class="lg:ml-64 min-h-screen flex flex-col">
+<header class="sticky top-0 z-30 bg-card/95 backdrop-blur-md border-b border-c">
+<div class="flex items-center justify-between p-4">
+<button onclick="toggleSidebar(true)" class="lg:hidden w-10 h-10 rounded-xl bg-slate-800 flex items-center justify-center">
+<i class="fa-solid fa-bars text-slate-300"></i>
+</button>
+<h1 id="pageTitle" class="text-lg font-black ml-3 lg:ml-0">Dashboard</h1>
+<div class="flex items-center gap-2">
+<button onclick="refreshCurrentPage()" class="w-10 h-10 rounded-xl bg-slate-800 flex items-center justify-center text-slate-300 hover:text-orange-500">
+<i class="fa-solid fa-rotate"></i>
+</button>
+<div id="clock" class="hidden md:block text-xs text-slate-500 font-mono px-3 py-2 rounded-lg bg-slate-800/50">--:--:--</div>
+</div>
+</div>
+</header>
+
+<main class="flex-1 p-4 lg:p-6">
+
+<div id="page-dashboard" class="app-page active">
+<div class="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-4 mb-6">
+<div class="stat-card">
+<i class="fa-solid fa-users text-orange-400 text-2xl mb-2"></i>
+<p class="text-[10px] text-slate-500 uppercase font-bold tracking-wider">Total Users</p>
+<p id="statUsers" class="text-2xl font-black mt-1">--</p>
+</div>
+<div class="stat-card">
+<i class="fa-solid fa-gamepad text-emerald-400 text-2xl mb-2"></i>
+<p class="text-[10px] text-slate-500 uppercase font-bold tracking-wider">Matches</p>
+<p id="statMatches" class="text-2xl font-black mt-1">--</p>
+</div>
+<div class="stat-card">
+<i class="fa-solid fa-money-bill-trend-up text-yellow-400 text-2xl mb-2"></i>
+<p class="text-[10px] text-slate-500 uppercase font-bold tracking-wider">Total Deposits</p>
+<p id="statDeposits" class="text-2xl font-black mt-1">৳--</p>
+</div>
+<div class="stat-card">
+<i class="fa-solid fa-clock text-rose-400 text-2xl mb-2"></i>
+<p class="text-[10px] text-slate-500 uppercase font-bold tracking-wider">Pending</p>
+<p id="statPending" class="text-2xl font-black mt-1">--</p>
+</div>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6">
+<div class="bg-card border border-c rounded-2xl p-5">
+<h3 class="font-bold text-sm mb-4 flex items-center gap-2">
+<i class="fa-solid fa-bolt text-orange-500"></i> Quick Actions
+</h3>
+<div class="grid grid-cols-2 gap-2">
+<button onclick="navigate('matches');openMatchForm()" class="btn-orange text-white font-bold py-3 rounded-xl text-xs">
+<i class="fa-solid fa-plus mr-1"></i> New Match
+</button>
+<button onclick="navigate('notifications');openNotifForm()" class="btn-blue text-white font-bold py-3 rounded-xl text-xs">
+<i class="fa-solid fa-bell mr-1"></i> Send Notice
+</button>
+<button onclick="navigate('deposits')" class="btn-emerald text-white font-bold py-3 rounded-xl text-xs">
+<i class="fa-solid fa-check mr-1"></i> Approve Deposits
+</button>
+<button onclick="navigate('withdraws')" class="btn-rose text-white font-bold py-3 rounded-xl text-xs">
+<i class="fa-solid fa-arrow-up mr-1"></i> Process Withdraws
+</button>
+</div>
+</div>
+
+<div class="bg-card border border-c rounded-2xl p-5">
+<h3 class="font-bold text-sm mb-4 flex items-center gap-2">
+<i class="fa-solid fa-triangle-exclamation text-yellow-500"></i> Needs Attention
+</h3>
+<div class="space-y-2 text-sm">
+<div class="flex items-center justify-between p-3 rounded-xl bg-slate-800/40">
+<span class="text-slate-300"><i class="fa-solid fa-circle-down text-rose-400 mr-2"></i>Pending Deposits</span>
+<span id="pendDep" class="font-black text-rose-400">--</span>
+</div>
+<div class="flex items-center justify-between p-3 rounded-xl bg-slate-800/40">
+<span class="text-slate-300"><i class="fa-solid fa-circle-up text-yellow-400 mr-2"></i>Pending Withdraws</span>
+<span id="pendWd" class="font-black text-yellow-400">--</span>
+</div>
+<div class="flex items-center justify-between p-3 rounded-xl bg-slate-800/40">
+<span class="text-slate-300"><i class="fa-solid fa-image text-emerald-400 mr-2"></i>Pending Screenshots</span>
+<span id="pendSS" class="font-black text-emerald-400">--</span>
+</div>
+</div>
+</div>
+</div>
+
+<div class="bg-card border border-c rounded-2xl p-5">
+<h3 class="font-bold text-sm mb-4 flex items-center gap-2">
+<i class="fa-solid fa-list-check text-orange-500"></i> Recent Activities
+</h3>
+<div id="recentActivity" class="space-y-2">
+<div class="shimmer h-12"></div>
+<div class="shimmer h-12"></div>
+<div class="shimmer h-12"></div>
+</div>
+</div>
+</div>
+
+<div id="page-matches" class="app-page">
+<div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+<div class="flex flex-wrap gap-2">
+<button onclick="loadMatches('all')" data-mfilter="all" class="chip active">All</button>
+<button onclick="loadMatches('upcoming')" data-mfilter="upcoming" class="chip">Upcoming</button>
+<button onclick="loadMatches('live')" data-mfilter="live" class="chip">Live</button>
+<button onclick="loadMatches('completed')" data-mfilter="completed" class="chip">Completed</button>
+<button onclick="loadMatches('cancelled')" data-mfilter="cancelled" class="chip">Cancelled</button>
+</div>
+<button onclick="openMatchForm()" class="btn-orange text-white font-bold px-5 py-2.5 rounded-xl text-xs">
+<i class="fa-solid fa-plus mr-1"></i> New Match
+</button>
+</div>
+<div class="bg-card border border-c rounded-2xl overflow-hidden">
+<div class="table-wrap">
+<table>
+<thead>
+<tr>
+<th>Match</th>
+<th>Cat</th>
+<th>Time</th>
+<th>Fee</th>
+<th>Prize</th>
+<th>Joined</th>
+<th>Status</th>
+<th>Actions</th>
+</tr>
+</thead>
+<tbody id="matchesTable">
+<tr><td colspan="8"><div class="shimmer h-12"></div></td></tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+
+<div id="page-users" class="app-page">
+<div class="flex flex-wrap items-center gap-3 mb-4">
+<input type="text" id="userSearch" oninput="filterUsers()" placeholder="Search name, email, UID..." class="input flex-1 min-w-[200px]">
+<select id="userFilter" onchange="filterUsers()" class="input w-auto">
+<option value="all">All Users</option>
+<option value="admin">Admins</option>
+<option value="banned">Banned</option>
+<option value="rich">Balance > ৳1000</option>
+</select>
+</div>
+<div class="bg-card border border-c rounded-2xl overflow-hidden">
+<div class="table-wrap">
+<table>
+<thead>
+<tr>
+<th>User</th>
+<th>Email</th>
+<th>Balance</th>
+<th>Wins</th>
+<th>Played</th>
+<th>Refer</th>
+<th>Status</th>
+<th>Actions</th>
+</tr>
+</thead>
+<tbody id="usersTable">
+<tr><td colspan="8"><div class="shimmer h-12"></div></td></tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+
+<div id="page-deposits" class="app-page">
+<div class="flex flex-wrap gap-2 mb-4">
+<button onclick="loadDeposits('pending')" data-dfilter="pending" class="chip active">Pending</button>
+<button onclick="loadDeposits('approved')" data-dfilter="approved" class="chip">Approved</button>
+<button onclick="loadDeposits('rejected')" data-dfilter="rejected" class="chip">Rejected</button>
+<button onclick="loadDeposits('all')" data-dfilter="all" class="chip">All</button>
+</div>
+<div class="bg-card border border-c rounded-2xl overflow-hidden">
+<div class="table-wrap">
+<table>
+<thead>
+<tr>
+<th>User</th>
+<th>Amount</th>
+<th>Method</th>
+<th>TrxID</th>
+<th>Time</th>
+<th>Status</th>
+<th>Actions</th>
+</tr>
+</thead>
+<tbody id="depositsTable">
+<tr><td colspan="7"><div class="shimmer h-12"></div></td></tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+
+<div id="page-withdraws" class="app-page">
+<div class="flex flex-wrap gap-2 mb-4">
+<button onclick="loadWithdraws('pending')" data-wfilter="pending" class="chip active">Pending</button>
+<button onclick="loadWithdraws('approved')" data-wfilter="approved" class="chip">Approved</button>
+<button onclick="loadWithdraws('rejected')" data-wfilter="rejected" class="chip">Rejected</button>
+<button onclick="loadWithdraws('all')" data-wfilter="all" class="chip">All</button>
+</div>
+<div class="bg-card border border-c rounded-2xl overflow-hidden">
+<div class="table-wrap">
+<table>
+<thead>
+<tr>
+<th>User</th>
+<th>Amount</th>
+<th>Method</th>
+<th>Number</th>
+<th>Time</th>
+<th>Status</th>
+<th>Actions</th>
+</tr>
+</thead>
+<tbody id="withdrawsTable">
+<tr><td colspan="7"><div class="shimmer h-12"></div></td></tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+
+<div id="page-results" class="app-page">
+<div class="mb-4">
+<select id="resultMatchFilter" onchange="loadResults()" class="input w-full md:w-96">
+<option value="">Select a match...</option>
+</select>
+</div>
+<div id="resultsList" class="space-y-3">
+<div class="empty">
+<i class="fa-solid fa-trophy"></i>
+<p>Select a match to manage results</p>
+</div>
+</div>
+</div>
+
+<div id="page-screenshots" class="app-page">
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="screenshotsGrid">
+<div class="shimmer h-64"></div>
+<div class="shimmer h-64"></div>
+</div>
+</div>
+
+<div id="page-notifications" class="app-page">
+<div class="flex justify-between items-center mb-4">
+<h3 class="font-bold text-sm">Sent Notifications</h3>
+<button onclick="openNotifForm()" class="btn-orange text-white font-bold px-5 py-2.5 rounded-xl text-xs">
+<i class="fa-solid fa-plus mr-1"></i> New Notification
+</button>
+</div>
+<div class="bg-card border border-c rounded-2xl overflow-hidden">
+<div class="table-wrap">
+<table>
+<thead>
+<tr>
+<th>Title</th>
+<th>Message</th>
+<th>Type</th>
+<th>Sent</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody id="notifsTable">
+<tr><td colspan="5"><div class="shimmer h-12"></div></td></tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+
+<div id="page-settings" class="app-page">
+<form id="settingsForm" onsubmit="saveSettings(event)" class="space-y-6 max-w-3xl">
+
+<div class="bg-card border border-c rounded-2xl p-5">
+<h3 class="font-bold text-sm mb-4 flex items-center gap-2">
+<i class="fa-solid fa-bullhorn text-orange-500"></i> Notice & Contact
+</h3>
+<div class="space-y-4">
+<div>
+<label class="block text-xs text-slate-400 font-semibold mb-1.5">Notice Text (Home page)</label>
+<textarea id="setNotice" class="input" placeholder="Scrolling notice text..."></textarea>
+</div>
+<div>
+<label class="block text-xs text-slate-400 font-semibold mb-1.5">WhatsApp Support Number</label>
+<input type="text" id="setWhatsapp" class="input" placeholder="8801700000000">
+</div>
+</div>
+</div>
+
+<div class="bg-card border border-c rounded-2xl p-5">
+<h3 class="font-bold text-sm mb-4 flex items-center gap-2">
+<i class="fa-solid fa-money-bill text-emerald-500"></i> Payment Settings
+</h3>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<div>
+<label class="block text-xs text-slate-400 font-semibold mb-1.5">Min Deposit (৳)</label>
+<input type="number" id="setMinDep" class="input" placeholder="20">
+</div>
+<div>
+<label class="block text-xs text-slate-400 font-semibold mb-1.5">Min Withdraw (৳)</label>
+<input type="number" id="setMinWd" class="input" placeholder="50">
+</div>
+<div>
+<label class="block text-xs text-slate-400 font-semibold mb-1.5">Daily Bonus (৳)</label>
+<input type="number" id="setBonus" class="input" placeholder="5">
+</div>
+<div>
+<label class="block text-xs text-slate-400 font-semibold mb-1.5">Refer Bonus (৳)</label>
+<input type="number" id="setRefBonus" class="input" placeholder="10">
+</div>
+</div>
+</div>
+
+<div class="bg-card border border-c rounded-2xl p-5">
+<h3 class="font-bold text-sm mb-4 flex items-center gap-2">
+<i class="fa-solid fa-mobile-screen text-purple-500"></i> Payment Numbers
+</h3>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+<div>
+<label class="block text-xs text-slate-400 font-semibold mb-1.5">bKash Number</label>
+<input type="text" id="setBkash" class="input" placeholder="01700000000">
+</div>
+<div>
+<label class="block text-xs text-slate-400 font-semibold mb-1.5">Nagad Number</label>
+<input type="text" id="setNagad" class="input" placeholder="01800000000">
+</div>
+<div>
+<label class="block text-xs text-slate-400 font-semibold mb-1.5">Rocket Number</label>
+<input type="text" id="setRocket" class="input" placeholder="01900000000">
+</div>
+</div>
+</div>
+
+<button type="submit" class="btn-orange text-white font-bold px-8 py-3.5 rounded-xl text-sm">
+<i class="fa-solid fa-save mr-2"></i> Save Settings
+</button>
+</form>
+</div>
+
+</main>
+</div>
+</div>
+
+<div id="modalMatch" class="modal">
+<div class="modal-bg" onclick="closeModal('modalMatch')"></div>
+<div class="modal-body">
+<div class="flex items-center justify-between p-5 border-b border-c">
+<h3 class="font-black text-base" id="matchFormTitle">New Match</h3>
+<button onclick="closeModal('modalMatch')" class="w-8 h-8 rounded-lg bg-slate-800 flex items-center justify-center text-slate-400">
+<i class="fa-solid fa-xmark"></i>
+</button>
+</div>
+<form id="matchForm" onsubmit="saveMatch(event)" class="p-5 space-y-4">
+<input type="hidden" id="matchId">
+<div class="grid grid-cols-2 gap-3">
+<div class="col-span-2">
+<label class="block text-xs text-slate-400 font-semibold mb-1.5">Title *</label>
+<input type="text" id="mTitle" required class="input" placeholder="BR Solo Battle #1">
+</div>
+<div>
+<label class="block text-xs text-slate-400 font-semibold mb-1.5">Category *</label>
+<select id="mCat" required class="input">
+<option value="BR">BR (Battle Royale)</option>
+<option value="CS">CS (Clash Squad)</option>
+</select>
+</div>
+<div>
+<label class="block text-xs text-slate-400 font-semibold mb-1.5">Map *</label>
+<select id="mMap" required class="input">
+<option>Bermuda</option>
+<option>Purgatory</option>
+<option>Kalahari</option>
+<option>Alpine</option>
+<option>Nexterra</option>
+</select>
+</div>
+<div>
+<label class="block text-xs text-slate-400 font-semibold mb-1.5">Type *</label>
+<select id="mType" required class="input">
+<option>Solo</option>
+<option>Duo</option>
+<option>Squad</option>
+<option>4v4</option>
+</select>
+</div>
+<div>
+<label class="block text-xs text-slate-400 font-semibold mb-1.5">Match Time *</label>
+<input type="datetime-local" id="mMatchTime" required class="input">
+</div>
+<div>
+<label class="block text-xs text-slate-400 font-semibold mb-1.5">Display Time</label>
+<input type="text" id="mTime" class="input" placeholder="Today 08:00 PM">
+</div>
+<div>
+<label class="block text-xs text-slate-400 font-semibold mb-1.5">Total Slots</label>
+<input type="number" id="mTotal" value="48" class="input">
+</div>
+<div>
+<label class="block text-xs text-slate-400 font-semibold mb-1.5">Entry Fee (৳) *</label>
+<input type="number" id="mFee" required value="20" class="input">
+</div>
+<div>
+<label class="block text-xs text-slate-400 font-semibold mb-1.5">Prize Pool (৳) *</label>
+<input type="number" id="mPrize" required value="500" class="input">
+</div>
+<div>
+<label class="block text-xs text-slate-400 font-semibold mb-1.5">Per Kill (৳)</label>
+<input type="number" id="mKill" value="10" class="input">
+</div>
+<div class="col-span-2">
+<label class="block text-xs text-slate-400 font-semibold mb-1.5">Status</label>
+<select id="mStatus" class="input">
+<option value="upcoming">Upcoming</option>
+<option value="live">Live</option>
+<option value="completed">Completed</option>
+<option value="cancelled">Cancelled</option>
+</select>
+</div>
+</div>
+<div class="flex gap-2 pt-3 border-t border-c">
+<button type="button" onclick="closeModal('modalMatch')" class="btn-ghost flex-1 text-slate-300 font-bold py-3 rounded-xl text-sm">Cancel</button>
+<button type="submit" id="matchSaveBtn" class="btn-orange flex-1 text-white font-bold py-3 rounded-xl text-sm">
+<i class="fa-solid fa-save mr-1"></i> Save Match
+</button>
+</div>
+</form>
+</div>
+</div>
+
+<div id="modalRoom" class="modal">
+<div class="modal-bg" onclick="closeModal('modalRoom')"></div>
+<div class="modal-body" style="max-width:420px">
+<div class="flex items-center justify-between p-5 border-b border-c">
+<h3 class="font-black text-base">Set Room Credentials</h3>
+<button onclick="closeModal('modalRoom')" class="w-8 h-8 rounded-lg bg-slate-800 flex items-center justify-center text-slate-400">
+<i class="fa-solid fa-xmark"></i>
+</button>
+</div>
+<form id="roomForm" onsubmit="saveRoom(event)" class="p-5 space-y-4">
+<input type="hidden" id="roomMatchId">
+<p class="text-xs text-slate-400">Match: <span id="roomMatchTitle" class="text-orange-400 font-bold"></span></p>
+<div>
+<label class="block text-xs text-slate-400 font-semibold mb-1.5">Room ID</label>
+<input type="text" id="roomId" required class="input" placeholder="e.g. 12345678">
+</div>
+<div>
+<label class="block text-xs text-slate-400 font-semibold mb-1.5">Password</label>
+<input type="text" id="roomPass" required class="input" placeholder="e.g. abc123">
+</div>
+<div class="flex gap-2 pt-3 border-t border-c">
+<button type="button" onclick="closeModal('modalRoom')" class="btn-ghost flex-1 text-slate-300 font-bold py-3 rounded-xl text-sm">Cancel</button>
+<button type="submit" class="btn-emerald flex-1 text-white font-bold py-3 rounded-xl text-sm">
+<i class="fa-solid fa-check mr-1"></i> Save
+</button>
+</div>
+</form>
+</div>
+</div>
+
+<div id="modalUser" class="modal">
+<div class="modal-bg" onclick="closeModal('modalUser')"></div>
+<div class="modal-body">
+<div class="flex items-center justify-between p-5 border-b border-c">
+<h3 class="font-black text-base">User Details</h3>
+<button onclick="closeModal('modalUser')" class="w-8 h-8 rounded-lg bg-slate-800 flex items-center justify-center text-slate-400">
+<i class="fa-solid fa-xmark"></i>
+</button>
+</div>
+<div id="userDetailBody" class="p-5 space-y-4"></div>
+</div>
+</div>
+
+<div id="modalNotif" class="modal">
+<div class="modal-bg" onclick="closeModal('modalNotif')"></div>
+<div class="modal-body">
+<div class="flex items-center justify-between p-5 border-b border-c">
+<h3 class="font-black text-base">Send Notification</h3>
+<button onclick="closeModal('modalNotif')" class="w-8 h-8 rounded-lg bg-slate-800 flex items-center justify-center text-slate-400">
+<i class="fa-solid fa-xmark"></i>
+</button>
+</div>
+<form id="notifForm" onsubmit="saveNotif(event)" class="p-5 space-y-4">
+<div>
+<label class="block text-xs text-slate-400 font-semibold mb-1.5">Title *</label>
+<input type="text" id="nTitle" required class="input" placeholder="Important Announcement">
+</div>
+<div>
+<label class="block text-xs text-slate-400 font-semibold mb-1.5">Message *</label>
+<textarea id="nMessage" required class="input" placeholder="Message details..."></textarea>
+</div>
+<div>
+<label class="block text-xs text-slate-400 font-semibold mb-1.5">Type</label>
+<select id="nType" class="input">
+<option value="info">Info (Blue)</option>
+<option value="success">Success (Green)</option>
+<option value="warning">Warning (Yellow)</option>
+<option value="danger">Danger (Red)</option>
+</select>
+</div>
+<button type="submit" class="btn-orange w-full text-white font-bold py-3.5 rounded-xl text-sm">
+<i class="fa-solid fa-paper-plane mr-1"></i> Send to All Users
+</button>
+</form>
+</div>
+</div>
+
+<div id="modalConfirm" class="modal">
+<div class="modal-bg" onclick="closeModal('modalConfirm')"></div>
+<div class="modal-body" style="max-width:400px">
+<div class="p-6 text-center">
+<div id="confirmIcon" class="w-16 h-16 mx-auto rounded-full bg-rose-500/20 flex items-center justify-center mb-4">
+<i class="fa-solid fa-triangle-exclamation text-rose-500 text-3xl"></i>
+</div>
+<h3 id="confirmTitle" class="font-black text-lg mb-2">Confirm Action</h3>
+<p id="confirmMessage" class="text-sm text-slate-400 mb-6">Are you sure?</p>
+<div class="flex gap-2">
+<button onclick="closeModal('modalConfirm')" class="btn-ghost flex-1 text-slate-300 font-bold py-3 rounded-xl text-sm">Cancel</button>
+<button id="confirmBtn" class="btn-rose flex-1 text-white font-bold py-3 rounded-xl text-sm">Confirm</button>
+</div>
+</div>
+</div>
+</div>
+
+<div id="loadingOverlay" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-[999] hidden items-center justify-center">
+<div class="text-center">
+<div class="w-16 h-16 mx-auto rounded-2xl bg-orange-500/20 border border-orange-500/40 flex items-center justify-center mb-3">
+<span class="spinner" style="width:24px;height:24px;border-width:3px"></span>
+</div>
+<p class="text-xs text-slate-400">Loading...</p>
+</div>
+</div>
